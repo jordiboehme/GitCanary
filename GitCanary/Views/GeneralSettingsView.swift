@@ -51,14 +51,20 @@ struct GeneralSettingsView: View {
             }
 
             Section("About") {
-                HStack {
-                    Text("GitCanary")
-                        .font(.body.weight(.medium))
-                    Spacer()
-                    if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-                        Text("v\(version)")
-                            .foregroundStyle(.secondary)
+                HStack(spacing: 12) {
+                    Image(nsImage: NSApp.applicationIconImage)
+                        .resizable()
+                        .frame(width: 48, height: 48)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("GitCanary")
+                            .font(.body.weight(.medium))
+                        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                            Text("Version \(version)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
+                    Spacer()
                 }
             }
         }

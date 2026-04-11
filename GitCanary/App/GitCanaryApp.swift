@@ -9,7 +9,11 @@ struct GitCanaryApp: App {
             MenuBarView()
                 .environment(appState)
         } label: {
-            Image(systemName: menuBarIcon)
+            if appState.isPaused {
+                Image(systemName: "pause.circle")
+            } else {
+                Image("MenuBarIcon")
+            }
         }
         .menuBarExtraStyle(.window)
 
@@ -17,17 +21,6 @@ struct GitCanaryApp: App {
             SettingsView()
                 .environment(appState)
         }
-    }
-
-    private var menuBarIcon: String {
-        if appState.isPaused {
-            return "bird.slash"
-        }
-        let hasChanges = appState.repositories.contains {
-            if case .hasChanges = $0.status { return true }
-            return false
-        }
-        return hasChanges ? "bird.fill" : "bird"
     }
 
     init() {

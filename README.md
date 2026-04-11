@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" width="128" alt="GitCanary">
+</p>
+
 # GitCanary
 
 A native macOS menu bar app that monitors git repositories and provides AI-generated summaries of changes on remote/origin since last pulled. Early warning about what's coming from remote.
