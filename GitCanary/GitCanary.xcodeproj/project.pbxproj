@@ -10,6 +10,22 @@
 		B10001001 /* GitCanaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002001 /* GitCanaryApp.swift */; };
 		B10001002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002002 /* ContentView.swift */; };
 		B10001003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10002003 /* Assets.xcassets */; };
+		B10001010 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002010 /* AppState.swift */; };
+		B10001011 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002011 /* AppSettings.swift */; };
+		B10001020 /* LLMProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002020 /* LLMProviderType.swift */; };
+		B10001021 /* CommitInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002021 /* CommitInfo.swift */; };
+		B10001022 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002022 /* Repository.swift */; };
+		B10001023 /* DiffSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002023 /* DiffSummary.swift */; };
+		B10001024 /* CheckSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002024 /* CheckSchedule.swift */; };
+		B10001030 /* GitCLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002030 /* GitCLI.swift */; };
+		B10001031 /* GitLogParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002031 /* GitLogParser.swift */; };
+		B10001032 /* RemotePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002032 /* RemotePoller.swift */; };
+		B10001033 /* FSEventsWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002033 /* FSEventsWatcher.swift */; };
+		B10001040 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002040 /* LLMService.swift */; };
+		B10001041 /* PromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002041 /* PromptBuilder.swift */; };
+		B10001042 /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002042 /* OllamaService.swift */; };
+		B10001050 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002050 /* KeychainManager.swift */; };
+		B10001051 /* BookmarkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002051 /* BookmarkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,6 +33,22 @@
 		B10002002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B10002003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10002004 /* GitCanary.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitCanary.entitlements; sourceTree = "<group>"; };
+		B10002010 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		B10002011 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		B10002020 /* LLMProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProviderType.swift; sourceTree = "<group>"; };
+		B10002021 /* CommitInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitInfo.swift; sourceTree = "<group>"; };
+		B10002022 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
+		B10002023 /* DiffSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffSummary.swift; sourceTree = "<group>"; };
+		B10002024 /* CheckSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckSchedule.swift; sourceTree = "<group>"; };
+		B10002030 /* GitCLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCLI.swift; sourceTree = "<group>"; };
+		B10002031 /* GitLogParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitLogParser.swift; sourceTree = "<group>"; };
+		B10002032 /* RemotePoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePoller.swift; sourceTree = "<group>"; };
+		B10002033 /* FSEventsWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSEventsWatcher.swift; sourceTree = "<group>"; };
+		B10002040 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		B10002041 /* PromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptBuilder.swift; sourceTree = "<group>"; };
+		B10002042 /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
+		B10002050 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		B10002051 /* BookmarkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkManager.swift; sourceTree = "<group>"; };
 		B10003000 /* GitCanary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitCanary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -43,6 +75,10 @@
 			isa = PBXGroup;
 			children = (
 				B10005002 /* App */,
+				B10005004 /* Models */,
+				B10005005 /* Git */,
+				B10005006 /* LLM */,
+				B10005007 /* Services */,
 				B10005003 /* Resources */,
 			);
 			name = GitCanary;
@@ -53,6 +89,8 @@
 			children = (
 				B10002001 /* GitCanaryApp.swift */,
 				B10002002 /* ContentView.swift */,
+				B10002010 /* AppState.swift */,
+				B10002011 /* AppSettings.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -64,6 +102,48 @@
 				B10002004 /* GitCanary.entitlements */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		B10005004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10002020 /* LLMProviderType.swift */,
+				B10002021 /* CommitInfo.swift */,
+				B10002022 /* Repository.swift */,
+				B10002023 /* DiffSummary.swift */,
+				B10002024 /* CheckSchedule.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B10005005 /* Git */ = {
+			isa = PBXGroup;
+			children = (
+				B10002030 /* GitCLI.swift */,
+				B10002031 /* GitLogParser.swift */,
+				B10002032 /* RemotePoller.swift */,
+				B10002033 /* FSEventsWatcher.swift */,
+			);
+			path = Git;
+			sourceTree = "<group>";
+		};
+		B10005006 /* LLM */ = {
+			isa = PBXGroup;
+			children = (
+				B10002040 /* LLMService.swift */,
+				B10002041 /* PromptBuilder.swift */,
+				B10002042 /* OllamaService.swift */,
+			);
+			path = LLM;
+			sourceTree = "<group>";
+		};
+		B10005007 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10002050 /* KeychainManager.swift */,
+				B10002051 /* BookmarkManager.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		B10005010 /* Products */ = {
@@ -145,6 +225,22 @@
 			files = (
 				B10001001 /* GitCanaryApp.swift in Sources */,
 				B10001002 /* ContentView.swift in Sources */,
+				B10001010 /* AppState.swift in Sources */,
+				B10001011 /* AppSettings.swift in Sources */,
+				B10001020 /* LLMProviderType.swift in Sources */,
+				B10001021 /* CommitInfo.swift in Sources */,
+				B10001022 /* Repository.swift in Sources */,
+				B10001023 /* DiffSummary.swift in Sources */,
+				B10001024 /* CheckSchedule.swift in Sources */,
+				B10001030 /* GitCLI.swift in Sources */,
+				B10001031 /* GitLogParser.swift in Sources */,
+				B10001032 /* RemotePoller.swift in Sources */,
+				B10001033 /* FSEventsWatcher.swift in Sources */,
+				B10001040 /* LLMService.swift in Sources */,
+				B10001041 /* PromptBuilder.swift in Sources */,
+				B10001042 /* OllamaService.swift in Sources */,
+				B10001050 /* KeychainManager.swift in Sources */,
+				B10001051 /* BookmarkManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
