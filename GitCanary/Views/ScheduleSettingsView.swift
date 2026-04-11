@@ -45,8 +45,8 @@ struct ScheduleSettingsView: View {
 
             if settings.pollingMode == .scheduled || settings.pollingMode == .both {
                 Section {
-                    ForEach($settings.scheduledChecks) { $schedule in
-                        scheduleRow(schedule: $schedule)
+                    ForEach(settings.scheduledChecks) { schedule in
+                        scheduleRow(for: schedule)
                     }
 
                     Button("Add Schedule") {
@@ -69,16 +69,21 @@ struct ScheduleSettingsView: View {
         .padding()
     }
 
-    private func scheduleRow(schedule: Binding<CheckSchedule>) -> some View {
+    private func indexFor(_ schedule: CheckSchedule) -> Int? {
+        settings.scheduledChecks.firstIndex(where: { $0.id == schedule.id })
+    }
+
+    private func scheduleRow(for schedule: CheckSchedule) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                timePicker(schedule: schedule)
+                timePicker(for: schedule)
 
                 Spacer()
 
                 Button(role: .destructive) {
+                    let id = schedule.id
                     withAnimation {
-                        settings.scheduledChecks.removeAll { $0.id == schedule.wrappedValue.id }
+                        settings.scheduledChecks.removeAll { $0.id == id }
                     }
                 } label: {
                     Image(systemName: "trash")
@@ -88,31 +93,45 @@ struct ScheduleSettingsView: View {
                 .disabled(settings.scheduledChecks.count <= 1)
             }
 
-            weekdayPicker(schedule: schedule)
+            weekdayPicker(for: schedule)
         }
         .padding(.vertical, 4)
     }
 
-    private func timePicker(schedule: Binding<CheckSchedule>) -> some View {
+    private func timePicker(for schedule: CheckSchedule) -> some View {
         HStack(spacing: 2) {
-            Picker(selection: schedule.hour) {
+            Picker(selection: Binding(
+                get: { schedule.hour },
+                set: { newValue in
+                    if let i = indexFor(schedule) {
+                        settings.scheduledChecks[i].hour = newValue
+                    }
+                }
+            )) {
                 ForEach(0..<24, id: \.self) { h in
                     Text(String(format: "%02d", h)).tag(h)
                 }
             } label: {
-                Text(String(format: "%02d", schedule.wrappedValue.hour))
+                Text(String(format: "%02d", schedule.hour))
                     .monospacedDigit()
             }
             .frame(width: 72)
 
             Text(":")
 
-            Picker(selection: schedule.minute) {
+            Picker(selection: Binding(
+                get: { schedule.minute },
+                set: { newValue in
+                    if let i = indexFor(schedule) {
+                        settings.scheduledChecks[i].minute = newValue
+                    }
+                }
+            )) {
                 ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { m in
                     Text(String(format: "%02d", m)).tag(m)
                 }
             } label: {
-                Text(String(format: "%02d", schedule.wrappedValue.minute))
+                Text(String(format: "%02d", schedule.minute))
                     .monospacedDigit()
             }
             .frame(width: 72)
@@ -120,16 +139,18 @@ struct ScheduleSettingsView: View {
         .labelsHidden()
     }
 
-    private func weekdayPicker(schedule: Binding<CheckSchedule>) -> some View {
+    private func weekdayPicker(for schedule: CheckSchedule) -> some View {
         HStack(spacing: 4) {
             ForEach(weekdaySymbols, id: \.value) { day in
                 Toggle(isOn: Binding(
-                    get: { schedule.wrappedValue.weekdays.contains(day.value) },
+                    get: { schedule.weekdays.contains(day.value) },
                     set: { isOn in
-                        if isOn {
-                            schedule.wrappedValue.weekdays.insert(day.value)
-                        } else {
-                            schedule.wrappedValue.weekdays.remove(day.value)
+                        if let i = indexFor(schedule) {
+                            if isOn {
+                                settings.scheduledChecks[i].weekdays.insert(day.value)
+                            } else {
+                                settings.scheduledChecks[i].weekdays.remove(day.value)
+                            }
                         }
                     }
                 )) {

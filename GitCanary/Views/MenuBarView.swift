@@ -2,9 +2,10 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             if !appState.gitAvailable {
                 gitWarningBanner
                 Divider()
@@ -17,11 +18,56 @@ struct MenuBarView: View {
             }
 
             Divider()
-            actionButtons
+
+            if let next = appState.remotePoller.nextScheduledCheck {
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                    Text("Next check \(next, style: .relative)")
+                    Spacer()
+                }
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                Divider()
+            }
+
+            menuButton("Check All Now", icon: "arrow.clockwise") {
+                appState.checkAllNow()
+            }
+            .disabled(appState.repositories.isEmpty || !appState.gitAvailable)
+
+            menuButton("View Summaries", icon: "text.document") {
+                openSummaryWindow()
+            }
+            .disabled(!hasSummaries)
+
+            menuButton(
+                appState.isPaused ? "Resume Monitoring" : "Pause Monitoring",
+                icon: appState.isPaused ? "play.fill" : "pause.fill"
+            ) {
+                appState.togglePause()
+            }
+
             Divider()
-            footerButtons
+
+            SettingsLink {
+                menuLabel("Settings...", icon: "gear")
+            }
+            .keyboardShortcut(",", modifiers: .command)
+
+            menuButton("Quit GitCanary", icon: "power") {
+                NSApplication.shared.terminate(nil)
+            }
+            .keyboardShortcut("q")
+
+            Spacer().frame(height: 6)
         }
-        .frame(width: 300)
+        .buttonStyle(.plain)
+        .frame(width: 260)
+        .onAppear {
+            SummaryWindowState.shared.openWindowAction = openWindow
+        }
     }
 
     // MARK: - Git Warning
@@ -39,7 +85,8 @@ struct MenuBarView: View {
             }
             Spacer()
         }
-        .padding(10)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .background(.orange.opacity(0.08))
     }
 
@@ -47,9 +94,9 @@ struct MenuBarView: View {
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            Image(systemName: "bird")
-                .font(.system(size: 32))
-                .foregroundStyle(.tertiary)
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: 48, height: 48)
             Text("No repositories")
                 .font(.headline)
             Text("Add a git repository to start\nmonitoring remote changes.")
@@ -62,6 +109,7 @@ struct MenuBarView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
         }
+        .frame(maxWidth: .infinity)
         .padding(24)
     }
 
@@ -69,79 +117,47 @@ struct MenuBarView: View {
 
     private var repositoryList: some View {
         ScrollView {
-            VStack(spacing: 1) {
+            VStack(spacing: 0) {
                 ForEach(appState.repositories) { repo in
                     RepositoryRow(repository: repo)
                 }
             }
-            .padding(.vertical, 4)
         }
         .frame(maxHeight: 280)
     }
 
-    // MARK: - Actions
+    // MARK: - Menu Button
 
-    private var actionButtons: some View {
-        VStack(spacing: 0) {
-            if let next = appState.remotePoller.nextScheduledCheck {
-                HStack {
-                    Image(systemName: "clock")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Text("Next check \(next, style: .relative)")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-            }
-
-            Button {
-                appState.checkAllNow()
-            } label: {
-                Label("Check All Now", systemImage: "arrow.clockwise")
-            }
-            .disabled(appState.repositories.isEmpty || !appState.gitAvailable)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-
-            Button {
-                appState.togglePause()
-            } label: {
-                Label(
-                    appState.isPaused ? "Resume Monitoring" : "Pause Monitoring",
-                    systemImage: appState.isPaused ? "play.fill" : "pause.fill"
-                )
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
+    private func menuButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            menuLabel(title, icon: icon)
         }
     }
 
-    // MARK: - Footer
-
-    private var footerButtons: some View {
-        VStack(spacing: 0) {
-            SettingsLink {
-                Label("Settings...", systemImage: "gear")
-            }
-            .keyboardShortcut(",", modifiers: .command)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-
-            Button {
-                NSApplication.shared.terminate(nil)
-            } label: {
-                Label("Quit GitCanary", systemImage: "power")
-            }
-            .keyboardShortcut("q")
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
+    private func menuLabel(_ title: String, icon: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .frame(width: 16, alignment: .center)
+            Text(title)
+            Spacer()
         }
+        .font(.body)
+        .contentShape(Rectangle())
+        .padding(.horizontal, 14)
+        .padding(.vertical, 6)
+    }
+
+    private var hasSummaries: Bool {
+        appState.repositories.contains { $0.latestSummary != nil }
     }
 
     // MARK: - Actions
+
+    private func openSummaryWindow() {
+        SummaryWindowState.shared.openWindowAction = openWindow
+        SummaryWindowState.shared.requestOpen()
+        (NSApp.delegate as? AppDelegate)?.openSummaryWindow()
+    }
 
     private func addRepository() {
         let panel = NSOpenPanel()

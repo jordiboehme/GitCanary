@@ -110,6 +110,7 @@ final class RemotePoller {
     }
 
     func poll(_ repo: Repository, gitCLI: GitCLI) async -> PollResult {
+        NSLog("GitCanary: polling %@ (%@/%@)", repo.name, repo.remoteName, repo.trackingBranch)
         do {
             let directory: String
             if let bookmarkData = repo.bookmarkData {
@@ -139,17 +140,24 @@ final class RemotePoller {
             try await gitCLI.fetch(remote: repo.remoteName, in: directory)
 
             // Get commit log
+            let maxCount = AppSettings.shared.maxCommitsToSummarize
             let range: String
+            let fromHash: String
+
             if let lastHash = repo.lastRemoteHash {
+                // Incremental: only new commits since last check
                 range = "\(lastHash)..\(remoteHash)"
+                fromHash = lastHash
             } else {
+                // First check: get recent commits from the branch
                 range = "\(repo.remoteName)/\(repo.trackingBranch)"
+                fromHash = ""
             }
 
             let logOutput = try await gitCLI.log(
                 range: range,
                 in: directory,
-                maxCount: AppSettings.shared.maxCommitsToSummarize
+                maxCount: maxCount
             )
             let commits = GitLogParser.parse(logOutput)
 
@@ -157,8 +165,11 @@ final class RemotePoller {
                 return .noChanges
             }
 
-            let fromHash = repo.lastRemoteHash ?? commits.last?.hash ?? ""
-            return .newCommits(commits: commits, fromHash: fromHash, toHash: remoteHash)
+            return .newCommits(
+                commits: commits,
+                fromHash: fromHash.isEmpty ? (commits.last?.hash ?? remoteHash) : fromHash,
+                toHash: remoteHash
+            )
 
         } catch {
             lastError = error.localizedDescription

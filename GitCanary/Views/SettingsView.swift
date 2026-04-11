@@ -22,7 +22,15 @@ struct SettingsView: View {
                 .tabItem {
                     Label("General", systemImage: "gear")
                 }
+
+            AboutView()
+                .tabItem {
+                    Label("About", systemImage: "info.circle")
+                }
         }
         .frame(width: 480, height: 400)
+        .onAppear {
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 }

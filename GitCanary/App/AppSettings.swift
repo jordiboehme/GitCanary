@@ -74,7 +74,7 @@ final class AppSettings {
             CheckSchedule(hour: 9, minute: 0, weekdays: Set(2...6)),
         ]
         self.gitBinaryPath = d.string(forKey: "gitBinaryPath") ?? "/usr/bin/git"
-        self.selectedLLMProvider = LLMProviderType(rawValue: d.string(forKey: "selectedLLMProvider") ?? "") ?? .ollama
+        self.selectedLLMProvider = LLMProviderType(rawValue: d.string(forKey: "selectedLLMProvider") ?? "") ?? .appleIntelligence
         self.ollamaBaseURL = d.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
         self.ollamaModel = d.string(forKey: "ollamaModel") ?? "llama3.2"
         self.claudeModel = d.string(forKey: "claudeModel") ?? "claude-sonnet-4-20250514"

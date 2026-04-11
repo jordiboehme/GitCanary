@@ -1,6 +1,6 @@
 import Foundation
 
-struct DiffSummary: Identifiable, Equatable {
+struct DiffSummary: Identifiable, Equatable, Codable {
     let id: UUID
     let repositoryID: UUID
     let generatedAt: Date
@@ -28,5 +28,21 @@ struct DiffSummary: Identifiable, Equatable {
         self.commits = commits
         self.fromHash = fromHash
         self.toHash = toHash
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, repositoryID, generatedAt, provider, summary, commits, fromHash, toHash
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        repositoryID = try container.decode(UUID.self, forKey: .repositoryID)
+        generatedAt = try container.decode(Date.self, forKey: .generatedAt)
+        provider = try container.decode(LLMProviderType.self, forKey: .provider)
+        summary = try container.decode(String.self, forKey: .summary)
+        commits = try container.decode([CommitInfo].self, forKey: .commits)
+        fromHash = try container.decode(String.self, forKey: .fromHash)
+        toHash = try container.decode(String.self, forKey: .toHash)
     }
 }

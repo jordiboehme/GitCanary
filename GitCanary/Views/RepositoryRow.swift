@@ -66,6 +66,16 @@ struct RepositoryRow: View {
             }
 
             if repository.latestSummary != nil {
+                Button {
+                    openSummaryWindow(repoID: repository.id, summaryID: repository.latestSummary?.id)
+                } label: {
+                    Image(systemName: "arrow.up.right.square")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("View full summary")
+
                 Image(systemName: "chevron.right")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
@@ -96,6 +106,11 @@ struct RepositoryRow: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
         }
+    }
+
+    private func openSummaryWindow(repoID: UUID, summaryID: UUID?) {
+        SummaryWindowState.shared.requestOpen(repoID: repoID, summaryID: summaryID)
+        (NSApp.delegate as? AppDelegate)?.openSummaryWindow()
     }
 
     @ViewBuilder
