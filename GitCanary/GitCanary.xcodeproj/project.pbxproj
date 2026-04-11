@@ -31,6 +31,9 @@
 		B10001040 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002040 /* LLMService.swift */; };
 		B10001041 /* PromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002041 /* PromptBuilder.swift */; };
 		B10001042 /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002042 /* OllamaService.swift */; };
+		B10001043 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002043 /* ClaudeService.swift */; };
+		B10001044 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002044 /* OpenAIService.swift */; };
+		B10001045 /* AppleIntelligenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002045 /* AppleIntelligenceService.swift */; };
 		B10001050 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002050 /* KeychainManager.swift */; };
 		B10001051 /* BookmarkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002051 /* BookmarkManager.swift */; };
 /* End PBXBuildFile section */
@@ -61,6 +64,9 @@
 		B10002040 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		B10002041 /* PromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptBuilder.swift; sourceTree = "<group>"; };
 		B10002042 /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
+		B10002043 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
+		B10002044 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
+		B10002045 /* AppleIntelligenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceService.swift; sourceTree = "<group>"; };
 		B10002050 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		B10002051 /* BookmarkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkManager.swift; sourceTree = "<group>"; };
 		B10003000 /* GitCanary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitCanary.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,6 +153,9 @@
 				B10002040 /* LLMService.swift */,
 				B10002041 /* PromptBuilder.swift */,
 				B10002042 /* OllamaService.swift */,
+				B10002043 /* ClaudeService.swift */,
+				B10002044 /* OpenAIService.swift */,
+				B10002045 /* AppleIntelligenceService.swift */,
 			);
 			path = LLM;
 			sourceTree = "<group>";
@@ -267,6 +276,9 @@
 				B10001040 /* LLMService.swift in Sources */,
 				B10001041 /* PromptBuilder.swift in Sources */,
 				B10001042 /* OllamaService.swift in Sources */,
+				B10001043 /* ClaudeService.swift in Sources */,
+				B10001044 /* OpenAIService.swift in Sources */,
+				B10001045 /* AppleIntelligenceService.swift in Sources */,
 				B10001050 /* KeychainManager.swift in Sources */,
 				B10001051 /* BookmarkManager.swift in Sources */,
 				B10001060 /* MenuBarView.swift in Sources */,

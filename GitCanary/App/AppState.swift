@@ -177,9 +177,20 @@ final class AppState {
         switch settings.selectedLLMProvider {
         case .ollama:
             OllamaService(baseURL: settings.ollamaBaseURL, model: settings.ollamaModel)
-        case .appleIntelligence, .claude, .openai:
-            // Placeholder — additional backends added in Phase 4
-            OllamaService(baseURL: settings.ollamaBaseURL, model: settings.ollamaModel)
+        case .claude:
+            ClaudeService(model: settings.claudeModel)
+        case .openai:
+            OpenAIService(model: settings.openAIModel)
+        case .appleIntelligence:
+            #if canImport(FoundationModels)
+            if #available(macOS 26, *) {
+                AppleIntelligenceService()
+            } else {
+                AppleIntelligenceFallbackService()
+            }
+            #else
+            AppleIntelligenceFallbackService()
+            #endif
         }
     }
 
