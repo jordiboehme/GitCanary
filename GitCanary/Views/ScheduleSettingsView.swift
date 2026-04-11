@@ -94,29 +94,36 @@ struct ScheduleSettingsView: View {
     }
 
     private func timePicker(index: Int) -> some View {
-        HStack(spacing: 4) {
-            Picker("", selection: Binding(
+        HStack(spacing: 2) {
+            Picker(selection: Binding(
                 get: { settings.scheduledChecks[index].hour },
                 set: { settings.scheduledChecks[index].hour = $0 }
             )) {
                 ForEach(0..<24, id: \.self) { h in
                     Text(String(format: "%02d", h)).tag(h)
                 }
+            } label: {
+                Text(String(format: "%02d", settings.scheduledChecks[index].hour))
+                    .monospacedDigit()
             }
-            .frame(width: 60)
+            .frame(width: 72)
 
             Text(":")
 
-            Picker("", selection: Binding(
+            Picker(selection: Binding(
                 get: { settings.scheduledChecks[index].minute },
                 set: { settings.scheduledChecks[index].minute = $0 }
             )) {
                 ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { m in
                     Text(String(format: "%02d", m)).tag(m)
                 }
+            } label: {
+                Text(String(format: "%02d", settings.scheduledChecks[index].minute))
+                    .monospacedDigit()
             }
-            .frame(width: 60)
+            .frame(width: 72)
         }
+        .labelsHidden()
     }
 
     private func weekdayPicker(index: Int) -> some View {
@@ -144,9 +151,15 @@ struct ScheduleSettingsView: View {
     }
 
     private var weekdaySymbols: [(label: String, value: Int)] {
-        [
-            ("Su", 1), ("Mo", 2), ("Tu", 3), ("We", 4),
-            ("Th", 5), ("Fr", 6), ("Sa", 7),
-        ]
+        let calendar = Calendar.current
+        let symbols = calendar.veryShortWeekdaySymbols // Localized: ["S","M","T",…] or ["M","D","M",…]
+        let firstWeekday = calendar.firstWeekday // 1=Sunday (US), 2=Monday (DE), etc.
+
+        // Calendar weekday indices: 1=Sunday, 2=Monday, …, 7=Saturday
+        // Reorder to start from the locale's first weekday
+        return (0..<7).map { offset in
+            let weekday = ((firstWeekday - 1 + offset) % 7) + 1 // 1-based
+            return (label: symbols[weekday - 1], value: weekday)
+        }
     }
 }
