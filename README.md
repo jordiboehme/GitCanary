@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/app-icon.png" width="128" alt="GitCanary">
+  <img src=".github/app-icon.png" width="256" alt="GitCanary">
 </p>
 
 # GitCanary
