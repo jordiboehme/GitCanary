@@ -1,0 +1,19 @@
+# Build artifacts
+build/
+DerivedData/
+*.app
+*.dmg
+*.dSYM
+
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+
+# Code signing
+*.p12
+
+# macOS
+.DS_Store
+
+# Claude Code
+CLAUDE.md
