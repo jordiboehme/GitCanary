@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B10001001 /* GitCanaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002001 /* GitCanaryApp.swift */; };
 		B10001003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10002003 /* Assets.xcassets */; };
+		B10001052 /* PowerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002052 /* PowerMonitor.swift */; };
+		B10001053 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002053 /* ConnectivityMonitor.swift */; };
 		B10001060 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002060 /* MenuBarView.swift */; };
 		B10001061 /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002061 /* RepositoryRow.swift */; };
 		B10001062 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002062 /* SummaryView.swift */; };
@@ -41,6 +43,8 @@
 /* Begin PBXFileReference section */
 		B10002001 /* GitCanaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCanaryApp.swift; sourceTree = "<group>"; };
 		B10002003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10002052 /* PowerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMonitor.swift; sourceTree = "<group>"; };
+		B10002053 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
 		B10002060 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		B10002061 /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryRow.swift; sourceTree = "<group>"; };
 		B10002062 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
@@ -165,6 +169,8 @@
 			children = (
 				B10002050 /* KeychainManager.swift */,
 				B10002051 /* BookmarkManager.swift */,
+				B10002052 /* PowerMonitor.swift */,
+				B10002053 /* ConnectivityMonitor.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -281,6 +287,8 @@
 				B10001045 /* AppleIntelligenceService.swift in Sources */,
 				B10001050 /* KeychainManager.swift in Sources */,
 				B10001051 /* BookmarkManager.swift in Sources */,
+				B10001052 /* PowerMonitor.swift in Sources */,
+				B10001053 /* ConnectivityMonitor.swift in Sources */,
 				B10001060 /* MenuBarView.swift in Sources */,
 				B10001061 /* RepositoryRow.swift in Sources */,
 				B10001062 /* SummaryView.swift in Sources */,

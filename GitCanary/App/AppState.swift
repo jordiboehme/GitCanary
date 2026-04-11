@@ -12,6 +12,8 @@ final class AppState {
 
     private(set) var remotePoller = RemotePoller()
     private(set) var fsEventsWatcher = FSEventsWatcher()
+    private(set) var connectivity = ConnectivityMonitor.shared
+    private(set) var power = PowerMonitor.shared
     private var gitCLI: GitCLI?
 
     private let settings = AppSettings.shared
@@ -24,7 +26,11 @@ final class AppState {
         startPolling()
         setupFSEvents()
         setupWakeObserver()
-        remotePoller.handleMissedSchedules(gitCLI: gitCLI!, repositories: repositories)
+        setupConnectivityObserver()
+
+        if connectivity.isConnected, let git = gitCLI {
+            remotePoller.handleMissedSchedules(gitCLI: git, repositories: repositories)
+        }
     }
 
     func stop() {
@@ -139,6 +145,11 @@ final class AppState {
     // MARK: - Summarization
 
     private func summarize(repoIndex: Int, commits: [CommitInfo], fromHash: String, toHash: String) {
+        // Defer summarization if on battery and setting is enabled
+        if settings.deferLLMToBattery && !power.isOnACPower {
+            return
+        }
+
         let repo = repositories[repoIndex]
         repositories[repoIndex].status = .summarizing
 
@@ -219,6 +230,16 @@ final class AppState {
             queue: .main
         ) { [weak self] _ in
             guard let self, let git = gitCLI else { return }
+            if connectivity.isConnected {
+                remotePoller.handleMissedSchedules(gitCLI: git, repositories: repositories)
+            }
+            // If not connected, the connectivity observer will catch up once online
+        }
+    }
+
+    private func setupConnectivityObserver() {
+        connectivity.onConnectivityRestored = { [weak self] in
+            guard let self, let git = gitCLI, !isPaused else { return }
             remotePoller.handleMissedSchedules(gitCLI: git, repositories: repositories)
         }
     }
