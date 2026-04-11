@@ -2,17 +2,35 @@ import SwiftUI
 
 @main
 struct GitCanaryApp: App {
+    @State private var appState = AppState.shared
+
     var body: some Scene {
         MenuBarExtra {
-            ContentView()
+            MenuBarView()
+                .environment(appState)
         } label: {
-            Image(systemName: "bird")
+            Image(systemName: menuBarIcon)
         }
         .menuBarExtraStyle(.window)
 
         Settings {
-            Text("GitCanary Settings")
-                .frame(width: 400, height: 300)
+            SettingsView()
+                .environment(appState)
         }
+    }
+
+    private var menuBarIcon: String {
+        if appState.isPaused {
+            return "bird.slash"
+        }
+        let hasChanges = appState.repositories.contains {
+            if case .hasChanges = $0.status { return true }
+            return false
+        }
+        return hasChanges ? "bird.fill" : "bird"
+    }
+
+    init() {
+        appState.start()
     }
 }

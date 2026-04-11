@@ -8,8 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		B10001001 /* GitCanaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002001 /* GitCanaryApp.swift */; };
-		B10001002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002002 /* ContentView.swift */; };
 		B10001003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10002003 /* Assets.xcassets */; };
+		B10001060 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002060 /* MenuBarView.swift */; };
+		B10001061 /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002061 /* RepositoryRow.swift */; };
+		B10001062 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002062 /* SummaryView.swift */; };
+		B10001063 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002063 /* SettingsView.swift */; };
+		B10001064 /* RepositorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002064 /* RepositorySettingsView.swift */; };
+		B10001065 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002065 /* LLMSettingsView.swift */; };
+		B10001066 /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002066 /* ScheduleSettingsView.swift */; };
+		B10001067 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002067 /* GeneralSettingsView.swift */; };
 		B10001010 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002010 /* AppState.swift */; };
 		B10001011 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002011 /* AppSettings.swift */; };
 		B10001020 /* LLMProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002020 /* LLMProviderType.swift */; };
@@ -30,8 +37,15 @@
 
 /* Begin PBXFileReference section */
 		B10002001 /* GitCanaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCanaryApp.swift; sourceTree = "<group>"; };
-		B10002002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B10002003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10002060 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B10002061 /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryRow.swift; sourceTree = "<group>"; };
+		B10002062 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
+		B10002063 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10002064 /* RepositorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositorySettingsView.swift; sourceTree = "<group>"; };
+		B10002065 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
+		B10002066 /* ScheduleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsView.swift; sourceTree = "<group>"; };
+		B10002067 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		B10002004 /* GitCanary.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitCanary.entitlements; sourceTree = "<group>"; };
 		B10002010 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		B10002011 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -78,6 +92,7 @@
 				B10005004 /* Models */,
 				B10005005 /* Git */,
 				B10005006 /* LLM */,
+				B10005008 /* Views */,
 				B10005007 /* Services */,
 				B10005003 /* Resources */,
 			);
@@ -88,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				B10002001 /* GitCanaryApp.swift */,
-				B10002002 /* ContentView.swift */,
 				B10002010 /* AppState.swift */,
 				B10002011 /* AppSettings.swift */,
 			);
@@ -144,6 +158,21 @@
 				B10002051 /* BookmarkManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		B10005008 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10002060 /* MenuBarView.swift */,
+				B10002061 /* RepositoryRow.swift */,
+				B10002062 /* SummaryView.swift */,
+				B10002063 /* SettingsView.swift */,
+				B10002064 /* RepositorySettingsView.swift */,
+				B10002065 /* LLMSettingsView.swift */,
+				B10002066 /* ScheduleSettingsView.swift */,
+				B10002067 /* GeneralSettingsView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		B10005010 /* Products */ = {
@@ -224,7 +253,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B10001001 /* GitCanaryApp.swift in Sources */,
-				B10001002 /* ContentView.swift in Sources */,
 				B10001010 /* AppState.swift in Sources */,
 				B10001011 /* AppSettings.swift in Sources */,
 				B10001020 /* LLMProviderType.swift in Sources */,
@@ -241,6 +269,14 @@
 				B10001042 /* OllamaService.swift in Sources */,
 				B10001050 /* KeychainManager.swift in Sources */,
 				B10001051 /* BookmarkManager.swift in Sources */,
+				B10001060 /* MenuBarView.swift in Sources */,
+				B10001061 /* RepositoryRow.swift in Sources */,
+				B10001062 /* SummaryView.swift in Sources */,
+				B10001063 /* SettingsView.swift in Sources */,
+				B10001064 /* RepositorySettingsView.swift in Sources */,
+				B10001065 /* LLMSettingsView.swift in Sources */,
+				B10001066 /* ScheduleSettingsView.swift in Sources */,
+				B10001067 /* GeneralSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
