@@ -45,8 +45,8 @@ struct ScheduleSettingsView: View {
 
             if settings.pollingMode == .scheduled || settings.pollingMode == .both {
                 Section {
-                    ForEach(settings.scheduledChecks.indices, id: \.self) { index in
-                        scheduleRow(index: index)
+                    ForEach($settings.scheduledChecks) { $schedule in
+                        scheduleRow(schedule: $schedule)
                     }
 
                     Button("Add Schedule") {
@@ -69,16 +69,16 @@ struct ScheduleSettingsView: View {
         .padding()
     }
 
-    private func scheduleRow(index: Int) -> some View {
+    private func scheduleRow(schedule: Binding<CheckSchedule>) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                timePicker(index: index)
+                timePicker(schedule: schedule)
 
                 Spacer()
 
                 Button(role: .destructive) {
                     withAnimation {
-                        _ = settings.scheduledChecks.remove(at: index)
+                        settings.scheduledChecks.removeAll { $0.id == schedule.wrappedValue.id }
                     }
                 } label: {
                     Image(systemName: "trash")
@@ -88,37 +88,31 @@ struct ScheduleSettingsView: View {
                 .disabled(settings.scheduledChecks.count <= 1)
             }
 
-            weekdayPicker(index: index)
+            weekdayPicker(schedule: schedule)
         }
         .padding(.vertical, 4)
     }
 
-    private func timePicker(index: Int) -> some View {
+    private func timePicker(schedule: Binding<CheckSchedule>) -> some View {
         HStack(spacing: 2) {
-            Picker(selection: Binding(
-                get: { settings.scheduledChecks[index].hour },
-                set: { settings.scheduledChecks[index].hour = $0 }
-            )) {
+            Picker(selection: schedule.hour) {
                 ForEach(0..<24, id: \.self) { h in
                     Text(String(format: "%02d", h)).tag(h)
                 }
             } label: {
-                Text(String(format: "%02d", settings.scheduledChecks[index].hour))
+                Text(String(format: "%02d", schedule.wrappedValue.hour))
                     .monospacedDigit()
             }
             .frame(width: 72)
 
             Text(":")
 
-            Picker(selection: Binding(
-                get: { settings.scheduledChecks[index].minute },
-                set: { settings.scheduledChecks[index].minute = $0 }
-            )) {
+            Picker(selection: schedule.minute) {
                 ForEach(Array(stride(from: 0, to: 60, by: 5)), id: \.self) { m in
                     Text(String(format: "%02d", m)).tag(m)
                 }
             } label: {
-                Text(String(format: "%02d", settings.scheduledChecks[index].minute))
+                Text(String(format: "%02d", schedule.wrappedValue.minute))
                     .monospacedDigit()
             }
             .frame(width: 72)
@@ -126,16 +120,16 @@ struct ScheduleSettingsView: View {
         .labelsHidden()
     }
 
-    private func weekdayPicker(index: Int) -> some View {
+    private func weekdayPicker(schedule: Binding<CheckSchedule>) -> some View {
         HStack(spacing: 4) {
             ForEach(weekdaySymbols, id: \.value) { day in
                 Toggle(isOn: Binding(
-                    get: { settings.scheduledChecks[index].weekdays.contains(day.value) },
+                    get: { schedule.wrappedValue.weekdays.contains(day.value) },
                     set: { isOn in
                         if isOn {
-                            settings.scheduledChecks[index].weekdays.insert(day.value)
+                            schedule.wrappedValue.weekdays.insert(day.value)
                         } else {
-                            settings.scheduledChecks[index].weekdays.remove(day.value)
+                            schedule.wrappedValue.weekdays.remove(day.value)
                         }
                     }
                 )) {
@@ -152,13 +146,11 @@ struct ScheduleSettingsView: View {
 
     private var weekdaySymbols: [(label: String, value: Int)] {
         let calendar = Calendar.current
-        let symbols = calendar.veryShortWeekdaySymbols // Localized: ["S","M","T",…] or ["M","D","M",…]
-        let firstWeekday = calendar.firstWeekday // 1=Sunday (US), 2=Monday (DE), etc.
+        let symbols = calendar.veryShortWeekdaySymbols
+        let firstWeekday = calendar.firstWeekday
 
-        // Calendar weekday indices: 1=Sunday, 2=Monday, …, 7=Saturday
-        // Reorder to start from the locale's first weekday
         return (0..<7).map { offset in
-            let weekday = ((firstWeekday - 1 + offset) % 7) + 1 // 1-based
+            let weekday = ((firstWeekday - 1 + offset) % 7) + 1
             return (label: symbols[weekday - 1], value: weekday)
         }
     }
