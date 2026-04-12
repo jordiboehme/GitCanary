@@ -3,24 +3,9 @@ import SwiftUI
 struct RepositoryRow: View {
     let repository: Repository
     @Environment(\.openWindow) private var openWindow
-    @State private var isExpanded = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            mainRow
-            if isExpanded, let summary = repository.latestSummary {
-                SummaryView(summary: summary)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if repository.latestSummary != nil {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isExpanded.toggle()
-                }
-            }
-        }
+        mainRow
     }
 
     private var mainRow: some View {
@@ -33,13 +18,16 @@ struct RepositoryRow: View {
                     Text(repository.name)
                         .font(.system(.body, weight: .medium))
                         .lineLimit(1)
+                        .truncationMode(.tail)
 
                     Text(repository.trackingBranch)
                         .font(.caption2)
+                        .lineLimit(1)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)
                         .background(.quaternary)
                         .clipShape(Capsule())
+                        .fixedSize()
                 }
 
                 HStack(spacing: 4) {
@@ -52,9 +40,11 @@ struct RepositoryRow: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             }
+            .layoutPriority(-1)
 
-            Spacer()
+            Spacer(minLength: 4)
 
             if case .hasChanges(let count) = repository.status {
                 Text("\(count)")
@@ -76,11 +66,6 @@ struct RepositoryRow: View {
                 }
                 .buttonStyle(.plain)
                 .help("View full summary")
-
-                Image(systemName: "chevron.right")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
             }
         }
         .padding(.horizontal, 12)

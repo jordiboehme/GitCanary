@@ -151,14 +151,11 @@ struct MenuBarView: View {
     // MARK: - Repository List
 
     private var repositoryList: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                ForEach(appState.repositories) { repo in
-                    RepositoryRow(repository: repo)
-                }
+        VStack(spacing: 0) {
+            ForEach(appState.repositories) { repo in
+                RepositoryRow(repository: repo)
             }
         }
-        .frame(maxHeight: 280)
     }
 
     // MARK: - Menu Button
