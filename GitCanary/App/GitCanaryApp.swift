@@ -14,9 +14,14 @@ struct GitCanaryApp: App {
                 .environment(appState)
         } label: {
             if appState.isPaused {
-                Image(systemName: "pause.circle")
+                Image(systemName: "bird.fill")
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(.secondary)
+            } else if appState.repositories.contains(where: { $0.status == .summarizing }) {
+                Image(systemName: "bird.fill")
+                    .symbolEffect(.pulse)
             } else {
-                Image("MenuBarIcon")
+                Image(systemName: "bird.fill")
             }
         }
         .menuBarExtraStyle(.window)

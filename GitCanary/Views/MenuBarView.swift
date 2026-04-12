@@ -11,6 +11,11 @@ struct MenuBarView: View {
                 Divider()
             }
 
+            if appState.repositories.contains(where: { $0.status.isActive }) {
+                summarizingBanner
+                Divider()
+            }
+
             if appState.repositories.isEmpty {
                 emptyState
             } else {
@@ -67,6 +72,34 @@ struct MenuBarView: View {
         }
         .buttonStyle(.plain)
         .frame(width: 260)
+    }
+
+    // MARK: - Activity Banner
+
+    private var summarizingBanner: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+            Text(activityLabel)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+    }
+
+    private var activityLabel: String {
+        let active = appState.repositories.filter { $0.status.isActive }
+        guard let first = active.first else { return "" }
+        switch first.status {
+        case .checking, .fetching:
+            return "Checking \(first.name)..."
+        case .summarizing:
+            return "Summarizing \(first.name)..."
+        default:
+            return "Working..."
+        }
     }
 
     // MARK: - Git Warning

@@ -24,6 +24,14 @@ final class SummaryHistoryStore {
         summaries.filter { $0.repositoryID == repoID }
     }
 
+    func delete(_ summaryID: UUID) {
+        if let index = summaries.firstIndex(where: { $0.id == summaryID }) {
+            let file = directory.appendingPathComponent("\(summaryID.uuidString).json")
+            try? FileManager.default.removeItem(at: file)
+            summaries.remove(at: index)
+        }
+    }
+
     func deleteAll(for repoID: UUID) {
         let toRemove = summaries.filter { $0.repositoryID == repoID }
         summaries.removeAll { $0.repositoryID == repoID }

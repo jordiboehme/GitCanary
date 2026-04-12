@@ -38,6 +38,13 @@ struct SummaryDetailView: View {
                     ForEach(group.summaries) { summary in
                         sidebarRow(summary)
                             .tag(summary.id)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    deleteSummary(summary.id)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                 }
             }
@@ -105,6 +112,13 @@ struct SummaryDetailView: View {
                         Label("Export", systemImage: "square.and.arrow.up")
                     }
                     .help("Export as Markdown")
+
+                    Button(role: .destructive) {
+                        deleteSummary(summary.id)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .help("Delete this summary")
                 }
             }
         } else {
@@ -254,6 +268,13 @@ struct SummaryDetailView: View {
     }
 
     // MARK: - Actions
+
+    private func deleteSummary(_ id: UUID) {
+        if selectedSummaryID == id {
+            selectedSummaryID = nil
+        }
+        historyStore.delete(id)
+    }
 
     private func copySummary(_ summary: DiffSummary, repo: Repository?) {
         let repoName = repo?.name ?? "Unknown"
