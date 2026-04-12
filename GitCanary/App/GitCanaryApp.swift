@@ -80,11 +80,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     func openSummaryWindow() {
-        NSApp.activate(ignoringOtherApps: true)
+        // Try to find and activate an existing window
         for window in NSApp.windows where window.title == "Summary" {
-            window.orderFrontRegardless()
             window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
             return
         }
+        // Window not yet created — use stored openWindow action
+        SummaryWindowState.shared.openWindowAction?(id: "summary-detail")
+        NSApp.activate(ignoringOtherApps: true)
     }
 }

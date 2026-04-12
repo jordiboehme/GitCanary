@@ -14,17 +14,10 @@ struct SummaryDetailView: View {
         }
         .frame(minWidth: 500, minHeight: 400)
         .onAppear {
-            if let id = windowState.selectedSummaryID {
-                selectedSummaryID = id
-            } else if let repoID = windowState.selectedRepositoryID,
-                      let first = historyStore.summaries(for: repoID).first {
-                selectedSummaryID = first.id
-            }
+            applyWindowState()
         }
-        .onChange(of: windowState.selectedSummaryID) { _, newValue in
-            if let id = newValue {
-                selectedSummaryID = id
-            }
+        .onChange(of: windowState.openTrigger) {
+            applyWindowState()
         }
     }
 
@@ -268,6 +261,23 @@ struct SummaryDetailView: View {
     }
 
     // MARK: - Actions
+
+    private func applyWindowState() {
+        if let id = windowState.selectedSummaryID {
+            // Verify the summary still exists
+            if historyStore.summaries.contains(where: { $0.id == id }) {
+                selectedSummaryID = id
+            } else if let repoID = windowState.selectedRepositoryID,
+                      let first = historyStore.summaries(for: repoID).first {
+                selectedSummaryID = first.id
+            } else {
+                selectedSummaryID = nil
+            }
+        } else if let repoID = windowState.selectedRepositoryID,
+                  let first = historyStore.summaries(for: repoID).first {
+            selectedSummaryID = first.id
+        }
+    }
 
     private func deleteSummary(_ id: UUID) {
         if selectedSummaryID == id {

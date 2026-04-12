@@ -72,6 +72,9 @@ struct MenuBarView: View {
         }
         .buttonStyle(.plain)
         .frame(width: 260)
+        .onAppear {
+            SummaryWindowState.shared.openWindowAction = openWindow
+        }
     }
 
     // MARK: - Activity Banner
