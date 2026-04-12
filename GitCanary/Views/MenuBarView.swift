@@ -40,7 +40,6 @@ struct MenuBarView: View {
             menuButton("View Summaries", icon: "text.document") {
                 openSummaryWindow()
             }
-            .disabled(!hasSummaries)
 
             menuButton(
                 appState.isPaused ? "Resume Monitoring" : "Pause Monitoring",
@@ -54,6 +53,9 @@ struct MenuBarView: View {
             SettingsLink {
                 menuLabel("Settings...", icon: "gear")
             }
+            .simultaneousGesture(TapGesture().onEnded {
+                dismissPopover()
+            })
             .keyboardShortcut(",", modifiers: .command)
 
             menuButton("Quit GitCanary", icon: "power") {
@@ -65,9 +67,6 @@ struct MenuBarView: View {
         }
         .buttonStyle(.plain)
         .frame(width: 260)
-        .onAppear {
-            SummaryWindowState.shared.openWindowAction = openWindow
-        }
     }
 
     // MARK: - Git Warning
@@ -147,16 +146,20 @@ struct MenuBarView: View {
         .padding(.vertical, 6)
     }
 
-    private var hasSummaries: Bool {
-        appState.repositories.contains { $0.latestSummary != nil }
-    }
-
     // MARK: - Actions
 
+    /// Dismisses the MenuBarExtra popover panel
+    private func dismissPopover() {
+        if let panel = NSApp.keyWindow as? NSPanel {
+            panel.close()
+        }
+    }
+
     private func openSummaryWindow() {
-        SummaryWindowState.shared.openWindowAction = openWindow
+        dismissPopover()
         SummaryWindowState.shared.requestOpen()
-        (NSApp.delegate as? AppDelegate)?.openSummaryWindow()
+        openWindow(id: "summary-detail")
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     private func addRepository() {

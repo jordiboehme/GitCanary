@@ -75,11 +75,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     func openSummaryWindow() {
+        NSApp.activate(ignoringOtherApps: true)
         for window in NSApp.windows where window.title == "Summary" {
+            window.orderFrontRegardless()
             window.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
             return
         }
-        NSApp.activate(ignoringOtherApps: true)
     }
 }

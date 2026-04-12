@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RepositoryRow: View {
     let repository: Repository
+    @Environment(\.openWindow) private var openWindow
     @State private var isExpanded = false
 
     var body: some View {
@@ -110,7 +111,8 @@ struct RepositoryRow: View {
 
     private func openSummaryWindow(repoID: UUID, summaryID: UUID?) {
         SummaryWindowState.shared.requestOpen(repoID: repoID, summaryID: summaryID)
-        (NSApp.delegate as? AppDelegate)?.openSummaryWindow()
+        openWindow(id: "summary-detail")
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @ViewBuilder
