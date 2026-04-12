@@ -6,7 +6,7 @@
 
 A native macOS menu bar app that monitors git repositories and provides AI-generated summaries of changes on remote/origin since last pulled. Early warning about what's coming from remote.
 
-**Your code stays on your machine.** GitCanary is local-first — all git operations happen on your Mac, and AI summarization defaults to local providers. Cloud providers are available but opt-in, and the privacy implications are clearly communicated.
+**Your code stays on your machine.** GitCanary is local-first — all git operations happen on your Mac and AI summarization defaults to local providers. Cloud providers are available but opt-in and the privacy implications are clearly communicated.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V31T6CL9)
 
@@ -34,7 +34,7 @@ Default priority: Apple Intelligence (if available) → Ollama → Cloud provide
 
 **Local providers** (Apple Intelligence, Ollama): Your repository data never leaves your trusted environment. Ollama can run on localhost or any host on your local network — either way, your data stays within your own infrastructure.
 
-**Cloud providers** (Claude, OpenAI): Commit messages and diffs are sent to external servers for summarization. Only use these providers if you trust them with your codebase data. The app clearly labels cloud providers and shows privacy warnings when selected.
+**Cloud providers** (Claude, OpenAI): Commit messages and diffs are sent to external servers for summarization. Only use these providers if you trust them with your codebase data.
 
 ## Installation
 
@@ -47,7 +47,7 @@ brew install --cask gitcanary
 
 ### Download
 
-Grab the latest DMG from [GitHub Releases](https://github.com/jordiboehme/GitCanary/releases), open it, and drag GitCanary to Applications.
+Grab the latest DMG from [GitHub Releases](https://github.com/jordiboehme/GitCanary/releases), open it and drag GitCanary to Applications.
 
 ### Build from Source
 
