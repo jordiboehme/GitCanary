@@ -1,4 +1,5 @@
 import Foundation
+import os
 import AppKit
 import UserNotifications
 
@@ -16,6 +17,7 @@ final class AppState {
     private(set) var connectivity = ConnectivityMonitor.shared
     private(set) var power = PowerMonitor.shared
     private var gitCLI: GitCLI?
+    private let logger = Logger(subsystem: "com.jordiboehme.GitCanary", category: "AppState")
 
     private let settings = AppSettings.shared
     private let historyStore = SummaryHistoryStore.shared
@@ -43,9 +45,9 @@ final class AppState {
 
     func requestNotificationPermission() {
         let center = UNUserNotificationCenter.current()
-        NSLog("GitCanary: requesting notification permission")
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            NSLog("GitCanary: notification permission granted=%d error=%@", granted ? 1 : 0, (error?.localizedDescription ?? "none") as NSString)
+        logger.info("Requesting notification permission")
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { [self] granted, error in
+            logger.info("Notification permission granted=\(granted) error=\(error?.localizedDescription ?? "none")")
         }
     }
 
@@ -82,7 +84,7 @@ final class AppState {
 
     func addRepository(url: URL) {
         let name = url.lastPathComponent
-        NSLog("GitCanary: adding repo %@ at %@", name, url.path)
+        logger.info("Adding repo \(name) at \(url.path)")
         let bookmarkData = try? BookmarkManager.createBookmark(for: url)
 
         var repo = Repository(
@@ -118,11 +120,11 @@ final class AppState {
 
     func checkAllNow() {
         guard let git = gitCLI else {
-            NSLog("GitCanary: gitCLI is nil, cannot check")
+            logger.error("gitCLI is nil, cannot check")
             return
         }
         let enabled = repositories.filter { $0.isEnabled }
-        NSLog("GitCanary: checking \(enabled.count) repos")
+        logger.info("Checking \(enabled.count) repos")
         for i in repositories.indices where repositories[i].isEnabled {
             repositories[i].status = .checking
         }
@@ -145,13 +147,13 @@ final class AppState {
 
     private func handlePollResult(repoID: UUID, result: PollResult) {
         guard let index = repositories.firstIndex(where: { $0.id == repoID }) else {
-            NSLog("GitCanary: repo \(repoID) not found")
+            logger.error("Repo \(repoID) not found")
             return
         }
 
         switch result {
         case .noChanges:
-            NSLog("GitCanary: \(repositories[index].name) — no changes")
+            logger.info("\(self.repositories[index].name) — no changes")
             repositories[index].lastCheckedDate = Date()
 
             if repositories[index].latestSummary == nil {
@@ -162,7 +164,7 @@ final class AppState {
             }
 
         case .newCommits(let commits, let fromHash, let toHash):
-            NSLog("GitCanary: \(repositories[index].name) — \(commits.count) commits")
+            logger.info("\(self.repositories[index].name) — \(commits.count) commits")
             repositories[index].lastCheckedDate = Date()
             repositories[index].lastRemoteHash = toHash
             repositories[index].status = .hasChanges(count: commits.count)
@@ -170,7 +172,7 @@ final class AppState {
             summarize(repoIndex: index, commits: commits, fromHash: fromHash, toHash: toHash)
 
         case .error(let message):
-            NSLog("GitCanary: \(repositories[index].name) — error: \(message)")
+            logger.error("\(self.repositories[index].name) — poll error: \(message)")
             repositories[index].status = .error(message)
         }
     }
@@ -211,7 +213,7 @@ final class AppState {
                     }
                 }
             } catch {
-                NSLog("GitCanary: initial summary failed for %@: %@", repo.name, error.localizedDescription)
+                logger.error("\(repo.name) — initial summary failed: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     if let idx = self.repositories.firstIndex(where: { $0.id == repo.id }) {
                         self.repositories[idx].status = .error(error.localizedDescription)
@@ -256,6 +258,7 @@ final class AppState {
                 historyStore.add(diffSummary)
                 sendNotification(repoName: repo.name, commitCount: commits.count, summary: summary, repoID: repo.id, summaryID: diffSummary.id)
             } catch {
+                logger.error("\(repo.name) — summary failed: \(error.localizedDescription)")
                 if let idx = repositories.firstIndex(where: { $0.id == repo.id }) {
                     repositories[idx].status = .error("Summary failed: \(error.localizedDescription)")
                 }

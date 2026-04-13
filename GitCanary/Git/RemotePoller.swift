@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 enum PollResult {
     case noChanges
@@ -12,6 +13,7 @@ final class RemotePoller {
     private var scheduleTimer: Timer?
     private let settings = AppSettings.shared
 
+    private let logger = Logger(subsystem: "com.jordiboehme.GitCanary", category: "RemotePoller")
     private(set) var lastError: String?
     private(set) var nextScheduledCheck: Date?
 
@@ -110,12 +112,13 @@ final class RemotePoller {
     }
 
     func poll(_ repo: Repository, gitCLI: GitCLI) async -> PollResult {
-        NSLog("GitCanary: polling %@ (%@/%@)", repo.name, repo.remoteName, repo.trackingBranch)
+        logger.info("Polling \(repo.name) (\(repo.remoteName)/\(repo.trackingBranch))")
         do {
             let directory: String
             if let bookmarkData = repo.bookmarkData {
                 let url = try BookmarkManager.resolveBookmark(bookmarkData)
                 guard url.startAccessingSecurityScopedResource() else {
+                    logger.error("\(repo.name) — cannot access repository (security scope)")
                     return .error("Cannot access repository")
                 }
                 defer { url.stopAccessingSecurityScopedResource() }
@@ -128,6 +131,7 @@ final class RemotePoller {
             let refs = try await gitCLI.lsRemote(remote: repo.remoteName, in: directory)
             let remoteRef = refs.first { $0.branchName == repo.trackingBranch }
             guard let remoteHash = remoteRef?.hash else {
+                logger.error("\(repo.name) — branch \(repo.trackingBranch) not found on \(repo.remoteName)")
                 return .error("Branch \(repo.trackingBranch) not found on \(repo.remoteName)")
             }
 
@@ -172,6 +176,7 @@ final class RemotePoller {
             )
 
         } catch {
+            logger.error("\(repo.name) — poll failed: \(error.localizedDescription)")
             lastError = error.localizedDescription
             return .error(error.localizedDescription)
         }
