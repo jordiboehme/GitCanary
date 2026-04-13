@@ -30,17 +30,32 @@ struct RepositoryRow: View {
                         .fixedSize()
                 }
 
-                HStack(spacing: 4) {
-                    statusText
-                    if let date = repository.lastCheckedDate {
-                        Text("·")
-                        Text(date, style: .relative)
-                            .foregroundStyle(.tertiary)
+                if case .error(let msg) = repository.status {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(msg)
+                            .foregroundStyle(.orange)
+                            .lineLimit(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .help(msg)
+                        if let date = repository.lastCheckedDate {
+                            Text(date, style: .relative)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
+                    .font(.caption)
+                } else {
+                    HStack(spacing: 4) {
+                        statusText
+                        if let date = repository.lastCheckedDate {
+                            Text("·")
+                            Text(date, style: .relative)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
                 }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
             }
             .layoutPriority(-1)
 
