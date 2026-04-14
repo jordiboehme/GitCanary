@@ -64,6 +64,10 @@ final class AppSettings {
         didSet { save("maxCommitsToSummarize", maxCommitsToSummarize) }
     }
 
+    var customPromptInstructions: String {
+        didSet { save("customPromptInstructions", customPromptInstructions) }
+    }
+
     private let defaults = UserDefaults.standard
 
     private init() {
@@ -81,6 +85,7 @@ final class AppSettings {
         self.openAIModel = d.string(forKey: "openAIModel") ?? "gpt-4o"
         self.deferLLMToBattery = d.bool(forKey: "deferLLMToBattery")
         self.maxCommitsToSummarize = d.object(forKey: "maxCommitsToSummarize") as? Int ?? 50
+        self.customPromptInstructions = d.string(forKey: "customPromptInstructions") ?? ""
     }
 
     private func save(_ key: String, _ value: Any) {

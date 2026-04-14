@@ -21,6 +21,8 @@ struct LLMSettingsView: View {
             case .openai:
                 openAISection
             }
+
+            customInstructionsSection
         }
         .formStyle(.grouped)
         .padding()
@@ -171,6 +173,23 @@ struct LLMSettingsView: View {
         .padding(8)
         .background(.orange.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    // MARK: - Custom Instructions
+
+    private var customInstructionsSection: some View {
+        Section {
+            TextEditor(text: $settings.customPromptInstructions)
+                .font(.body)
+                .frame(minHeight: 60, maxHeight: 120)
+                .scrollContentBackground(.hidden)
+        } header: {
+            Text("Custom Instructions")
+        } footer: {
+            Text("Guide what the summary focuses on, e.g. \"Focus on bug fixes and who authored them\" or \"Emphasize user-facing changes\".")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
     }
 
     // MARK: - Actions

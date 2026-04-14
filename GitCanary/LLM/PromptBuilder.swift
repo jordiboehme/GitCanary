@@ -1,12 +1,22 @@
 import Foundation
 
 enum PromptBuilder {
-    static let systemPrompt = """
-        You are a git commit summarizer. Given a list of commits and optionally a diff stat, \
-        produce a concise summary of what changed. Focus on the purpose and impact of changes, \
-        not implementation details. Group related changes together. Use markdown bullet points. \
-        Keep the summary to 2-5 bullet points.
-        """
+    static var systemPrompt: String {
+        var prompt = """
+            You are a git commit summarizer. Given a list of commits and optionally a diff stat, \
+            produce a concise summary of what changed. Focus on the purpose and impact of changes, \
+            not implementation details. Group related changes together. Use markdown bullet points. \
+            Keep the summary to 2-5 bullet points.
+            """
+
+        let custom = AppSettings.shared.customPromptInstructions
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if !custom.isEmpty {
+            prompt += "\n\nAdditional instructions from the user:\n\(custom)"
+        }
+
+        return prompt
+    }
 
     static func buildUserPrompt(
         commits: [CommitInfo],
