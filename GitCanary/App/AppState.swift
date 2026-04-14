@@ -13,7 +13,6 @@ final class AppState {
     var gitError: String?
 
     private(set) var remotePoller = RemotePoller()
-    private(set) var fsEventsWatcher = FSEventsWatcher()
     private(set) var connectivity = ConnectivityMonitor.shared
     private(set) var power = PowerMonitor.shared
     private var gitCLI: GitCLI?
@@ -34,7 +33,6 @@ final class AppState {
         detectGitBinary()
         loadRepositories()
         startPolling()
-        setupFSEvents()
         setupWakeObserver()
         setupConnectivityObserver()
 
@@ -53,7 +51,6 @@ final class AppState {
 
     func stop() {
         remotePoller.stop()
-        fsEventsWatcher.stopWatching()
     }
 
     // MARK: - Git Binary
@@ -287,24 +284,6 @@ final class AppState {
         }
     }
 
-    // MARK: - FSEvents
-
-    private func setupFSEvents() {
-        fsEventsWatcher.onChange = { [weak self] repoPath in
-            guard let self else { return }
-            // A local change happened — could trigger a re-check
-            if let repo = repositories.first(where: { $0.path == repoPath }),
-               let git = gitCLI
-            {
-                Task {
-                    let result = await self.remotePoller.poll(repo, gitCLI: git)
-                    self.handlePollResult(repoID: repo.id, result: result)
-                }
-            }
-        }
-        fsEventsWatcher.watch(repositories: repositories)
-    }
-
     private func setupWakeObserver() {
         NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didWakeNotification,
@@ -328,9 +307,7 @@ final class AppState {
 
     private func restartMonitoring() {
         remotePoller.stop()
-        fsEventsWatcher.stopWatching()
         startPolling()
-        setupFSEvents()
     }
 
     // MARK: - Notifications

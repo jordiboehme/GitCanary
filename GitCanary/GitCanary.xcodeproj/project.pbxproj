@@ -30,7 +30,6 @@
 		B10001030 /* GitCLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002030 /* GitCLI.swift */; };
 		B10001031 /* GitLogParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002031 /* GitLogParser.swift */; };
 		B10001032 /* RemotePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002032 /* RemotePoller.swift */; };
-		B10001033 /* FSEventsWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002033 /* FSEventsWatcher.swift */; };
 		B10001040 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002040 /* LLMService.swift */; };
 		B10001041 /* PromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002041 /* PromptBuilder.swift */; };
 		B10001042 /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002042 /* OllamaService.swift */; };
@@ -69,7 +68,6 @@
 		B10002030 /* GitCLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCLI.swift; sourceTree = "<group>"; };
 		B10002031 /* GitLogParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitLogParser.swift; sourceTree = "<group>"; };
 		B10002032 /* RemotePoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemotePoller.swift; sourceTree = "<group>"; };
-		B10002033 /* FSEventsWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSEventsWatcher.swift; sourceTree = "<group>"; };
 		B10002040 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		B10002041 /* PromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptBuilder.swift; sourceTree = "<group>"; };
 		B10002042 /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
@@ -156,7 +154,6 @@
 				B10002030 /* GitCLI.swift */,
 				B10002031 /* GitLogParser.swift */,
 				B10002032 /* RemotePoller.swift */,
-				B10002033 /* FSEventsWatcher.swift */,
 			);
 			path = Git;
 			sourceTree = "<group>";
@@ -290,7 +287,6 @@
 				B10001030 /* GitCLI.swift in Sources */,
 				B10001031 /* GitLogParser.swift in Sources */,
 				B10001032 /* RemotePoller.swift in Sources */,
-				B10001033 /* FSEventsWatcher.swift in Sources */,
 				B10001040 /* LLMService.swift in Sources */,
 				B10001041 /* PromptBuilder.swift in Sources */,
 				B10001042 /* OllamaService.swift in Sources */,
