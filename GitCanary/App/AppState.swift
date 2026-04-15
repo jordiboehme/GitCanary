@@ -22,9 +22,9 @@ final class AppState {
     private let historyStore = SummaryHistoryStore.shared
 
     private init() {
-        remotePoller.onPollResult = { [weak self] repoID, result in
+        remotePoller.onPollResult = { [weak self] repoID, resolved in
             DispatchQueue.main.async {
-                self?.handlePollResult(repoID: repoID, result: result)
+                self?.handlePollResult(repoID: repoID, resolved: resolved)
             }
         }
     }
@@ -113,6 +113,11 @@ final class AppState {
         restartMonitoring()
     }
 
+    func saveAndRestart() {
+        saveRepositories()
+        restartMonitoring()
+    }
+
     // MARK: - Polling
 
     func checkAllNow() {
@@ -142,19 +147,22 @@ final class AppState {
         remotePoller.start(gitCLI: git, repositories: repositories)
     }
 
-    private func handlePollResult(repoID: UUID, result: PollResult) {
+    private func handlePollResult(repoID: UUID, resolved: RemotePoller.ResolvedPoll) {
         guard let index = repositories.firstIndex(where: { $0.id == repoID }) else {
             logger.error("Repo \(repoID) not found")
             return
         }
 
-        switch result {
+        if let branch = resolved.activeBranch {
+            repositories[index].activeBranch = branch
+        }
+
+        switch resolved.result {
         case .noChanges:
             logger.info("\(self.repositories[index].name) — no changes")
             repositories[index].lastCheckedDate = Date()
 
             if repositories[index].latestSummary == nil {
-                // No summary yet — fetch recent commits and generate one
                 generateInitialSummary(repoIndex: index)
             } else {
                 repositories[index].status = .idle

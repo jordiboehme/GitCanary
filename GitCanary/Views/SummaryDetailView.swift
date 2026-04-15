@@ -130,7 +130,7 @@ struct SummaryDetailView: View {
                     .foregroundStyle(.secondary)
                 Text(repo?.name ?? "Unknown Repository")
                     .font(.title2.weight(.semibold))
-                if let branch = repo?.trackingBranch {
+                if let branch = repo?.activeBranch ?? repo?.trackingBranch {
                     Text(branch)
                         .font(.caption)
                         .padding(.horizontal, 6)

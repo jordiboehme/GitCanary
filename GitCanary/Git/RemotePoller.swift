@@ -17,7 +17,7 @@ final class RemotePoller {
     private(set) var lastError: String?
     private(set) var nextScheduledCheck: Date?
 
-    var onPollResult: ((UUID, PollResult) -> Void)?
+    var onPollResult: ((UUID, ResolvedPoll) -> Void)?
 
     func start(gitCLI: GitCLI, repositories: [Repository]) {
         stop()
@@ -106,20 +106,25 @@ final class RemotePoller {
         UserDefaults.standard.set(Date(), forKey: "lastActiveDate")
 
         for repo in repositories where repo.isEnabled {
-            let result = await poll(repo, gitCLI: gitCLI)
-            onPollResult?(repo.id, result)
+            let resolved = await poll(repo, gitCLI: gitCLI)
+            onPollResult?(repo.id, resolved)
         }
     }
 
-    func poll(_ repo: Repository, gitCLI: GitCLI) async -> PollResult {
-        logger.info("Polling \(repo.name) (\(repo.remoteName)/\(repo.trackingBranch))")
+    struct ResolvedPoll {
+        let result: PollResult
+        let activeBranch: String?
+    }
+
+    func poll(_ repo: Repository, gitCLI: GitCLI) async -> ResolvedPoll {
+        logger.info("Polling \(repo.name) (\(repo.remoteName)/\(repo.trackingBranch)) mode=\(repo.branchMode.rawValue)")
         do {
             let directory: String
             if let bookmarkData = repo.bookmarkData {
                 let url = try BookmarkManager.resolveBookmark(bookmarkData)
                 guard url.startAccessingSecurityScopedResource() else {
                     logger.error("\(repo.name) — cannot access repository (security scope)")
-                    return .error("Cannot access repository")
+                    return ResolvedPoll(result: .error("Cannot access repository"), activeBranch: nil)
                 }
                 defer { url.stopAccessingSecurityScopedResource() }
                 directory = url.path
@@ -129,15 +134,34 @@ final class RemotePoller {
 
             // Lightweight check: ls-remote
             let refs = try await gitCLI.lsRemote(remote: repo.remoteName, in: directory)
-            let remoteRef = refs.first { $0.branchName == repo.trackingBranch }
-            guard let remoteHash = remoteRef?.hash else {
-                logger.error("\(repo.name) — branch \(repo.trackingBranch) not found on \(repo.remoteName)")
-                return .error("Branch \(repo.trackingBranch) not found on \(repo.remoteName)")
+
+            // Resolve effective branch
+            let effectiveBranch: String
+            switch repo.branchMode {
+            case .fixed:
+                effectiveBranch = repo.trackingBranch
+            case .auto:
+                effectiveBranch = await resolveAutoBranch(
+                    repo: repo, refs: refs, gitCLI: gitCLI, directory: directory
+                )
             }
 
+            let remoteRef = refs.first { $0.branchName == effectiveBranch }
+            guard let remoteHash = remoteRef?.hash else {
+                logger.error("\(repo.name) — branch \(effectiveBranch) not found on \(repo.remoteName)")
+                return ResolvedPoll(
+                    result: .error("Branch \(effectiveBranch) not found on \(repo.remoteName)"),
+                    activeBranch: effectiveBranch
+                )
+            }
+
+            // Reset lastRemoteHash when the monitored branch changed
+            let branchChanged = repo.activeBranch != nil && repo.activeBranch != effectiveBranch
+            let lastHash = branchChanged ? nil : repo.lastRemoteHash
+
             // Compare with last known hash
-            if let lastHash = repo.lastRemoteHash, lastHash == remoteHash {
-                return .noChanges
+            if let lastHash, lastHash == remoteHash {
+                return ResolvedPoll(result: .noChanges, activeBranch: effectiveBranch)
             }
 
             // Fetch new objects
@@ -148,13 +172,11 @@ final class RemotePoller {
             let range: String
             let fromHash: String
 
-            if let lastHash = repo.lastRemoteHash {
-                // Incremental: only new commits since last check
+            if let lastHash {
                 range = "\(lastHash)..\(remoteHash)"
                 fromHash = lastHash
             } else {
-                // First check: get recent commits from the branch
-                range = "\(repo.remoteName)/\(repo.trackingBranch)"
+                range = "\(repo.remoteName)/\(effectiveBranch)"
                 fromHash = ""
             }
 
@@ -166,19 +188,49 @@ final class RemotePoller {
             let commits = GitLogParser.parse(logOutput)
 
             if commits.isEmpty {
-                return .noChanges
+                return ResolvedPoll(result: .noChanges, activeBranch: effectiveBranch)
             }
 
-            return .newCommits(
-                commits: commits,
-                fromHash: fromHash.isEmpty ? (commits.last?.hash ?? remoteHash) : fromHash,
-                toHash: remoteHash
+            return ResolvedPoll(
+                result: .newCommits(
+                    commits: commits,
+                    fromHash: fromHash.isEmpty ? (commits.last?.hash ?? remoteHash) : fromHash,
+                    toHash: remoteHash
+                ),
+                activeBranch: effectiveBranch
             )
 
         } catch {
             logger.error("\(repo.name) — poll failed: \(error.localizedDescription)")
             lastError = error.localizedDescription
-            return .error(error.localizedDescription)
+            return ResolvedPoll(result: .error(error.localizedDescription), activeBranch: nil)
         }
+    }
+
+    private func resolveAutoBranch(
+        repo: Repository, refs: [RemoteRef], gitCLI: GitCLI, directory: String
+    ) async -> String {
+        // 1. Try current local branch
+        if let current = try? await gitCLI.currentBranch(in: directory),
+           !current.isEmpty,
+           refs.contains(where: { $0.branchName == current })
+        {
+            return current
+        }
+
+        // 2. Fall back to stored tracking branch
+        if refs.contains(where: { $0.branchName == repo.trackingBranch }) {
+            return repo.trackingBranch
+        }
+
+        // 3. Fall back to remote's default branch
+        if let defaultBranch = try? await gitCLI.defaultBranch(remote: repo.remoteName, in: directory),
+           refs.contains(where: { $0.branchName == defaultBranch })
+        {
+            return defaultBranch
+        }
+
+        // 4. Last resort: use stored tracking branch (will produce an error)
+        return repo.trackingBranch
     }
 }

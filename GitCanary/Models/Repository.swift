@@ -16,13 +16,29 @@ enum RepositoryStatus: Equatable {
     }
 }
 
+enum BranchMode: String, Codable, CaseIterable, Identifiable {
+    case auto
+    case fixed
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .auto: "Auto"
+        case .fixed: "Fixed"
+        }
+    }
+}
+
 struct Repository: Identifiable, Equatable {
     let id: UUID
     var name: String
     var path: String
     var bookmarkData: Data?
     var remoteName: String
+    var branchMode: BranchMode
     var trackingBranch: String
+    var activeBranch: String?
     var lastCheckedDate: Date?
     var lastRemoteHash: String?
     var status: RepositoryStatus
@@ -35,6 +51,7 @@ struct Repository: Identifiable, Equatable {
         path: String,
         bookmarkData: Data? = nil,
         remoteName: String = "origin",
+        branchMode: BranchMode = .auto,
         trackingBranch: String = "main",
         isEnabled: Bool = true
     ) {
@@ -43,7 +60,9 @@ struct Repository: Identifiable, Equatable {
         self.path = path
         self.bookmarkData = bookmarkData
         self.remoteName = remoteName
+        self.branchMode = branchMode
         self.trackingBranch = trackingBranch
+        self.activeBranch = nil
         self.lastCheckedDate = nil
         self.lastRemoteHash = nil
         self.status = .idle
@@ -58,6 +77,7 @@ struct PersistedRepository: Codable {
     var path: String
     var bookmarkData: Data?
     var remoteName: String
+    var branchMode: BranchMode?
     var trackingBranch: String
     var lastRemoteHash: String?
     var isEnabled: Bool
@@ -68,6 +88,7 @@ struct PersistedRepository: Codable {
         self.path = repo.path
         self.bookmarkData = repo.bookmarkData
         self.remoteName = repo.remoteName
+        self.branchMode = repo.branchMode
         self.trackingBranch = repo.trackingBranch
         self.lastRemoteHash = repo.lastRemoteHash
         self.isEnabled = repo.isEnabled
@@ -80,6 +101,7 @@ struct PersistedRepository: Codable {
             path: path,
             bookmarkData: bookmarkData,
             remoteName: remoteName,
+            branchMode: branchMode ?? .auto,
             trackingBranch: trackingBranch,
             isEnabled: isEnabled
         )

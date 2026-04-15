@@ -149,6 +149,22 @@ actor GitCLI {
             }
     }
 
+    func defaultBranch(remote: String, in directory: String) async throws -> String? {
+        let output = try await run(["ls-remote", "--symref", remote, "HEAD"], in: directory)
+        guard output.exitCode == 0 else { return nil }
+        // Output format: "ref: refs/heads/main\tHEAD"
+        for line in output.stdout.split(separator: "\n") {
+            if line.hasPrefix("ref:"), let tabRange = line.range(of: "\t") {
+                let ref = line[line.index(line.startIndex, offsetBy: 5)..<tabRange.lowerBound]
+                    .trimmingCharacters(in: .whitespaces)
+                if ref.hasPrefix("refs/heads/") {
+                    return String(ref.dropFirst("refs/heads/".count))
+                }
+            }
+        }
+        return nil
+    }
+
     func fetch(remote: String, in directory: String) async throws {
         let output = try await run(["fetch", remote, "--prune"], in: directory, timeout: 60)
         guard output.exitCode == 0 else {

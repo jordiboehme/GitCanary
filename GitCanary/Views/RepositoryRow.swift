@@ -20,7 +20,7 @@ struct RepositoryRow: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
 
-                    Text(repository.trackingBranch)
+                    Text(repository.activeBranch ?? repository.trackingBranch)
                         .font(.caption2)
                         .lineLimit(1)
                         .padding(.horizontal, 5)
