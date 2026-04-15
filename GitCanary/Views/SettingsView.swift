@@ -3,6 +3,11 @@ import SwiftUI
 struct SettingsView: View {
     var body: some View {
         TabView {
+            GeneralSettingsView()
+                .tabItem {
+                    Label("General", systemImage: "gear")
+                }
+
             RepositorySettingsView()
                 .tabItem {
                     Label("Repositories", systemImage: "folder.badge.gearshape")
@@ -18,9 +23,9 @@ struct SettingsView: View {
                     Label("AI Provider", systemImage: "sparkles")
                 }
 
-            GeneralSettingsView()
+            CustomPromptView()
                 .tabItem {
-                    Label("General", systemImage: "gear")
+                    Label("Customize Prompt", systemImage: "text.quote")
                 }
 
             AboutView()

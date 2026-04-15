@@ -22,13 +22,19 @@ struct LLMSettingsView: View {
                 openAISection
             }
 
-            customInstructionsSection
         }
         .formStyle(.grouped)
         .padding()
     }
 
     // MARK: - Provider Picker
+
+    private var isAppleIntelligenceAvailable: Bool {
+        if #available(macOS 26, *) {
+            return true
+        }
+        return false
+    }
 
     private var providerPicker: some View {
         Section {
@@ -38,7 +44,11 @@ struct LLMSettingsView: View {
                         Image(systemName: provider.icon)
                             .frame(width: 16)
                         Text(provider.displayName)
-                        if provider.isLocal {
+                        if provider == .appleIntelligence && !isAppleIntelligenceAvailable {
+                            Text("macOS 26 required")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        } else if provider.isLocal {
                             Text("Local")
                                 .font(.caption2)
                                 .padding(.horizontal, 4)
@@ -60,6 +70,11 @@ struct LLMSettingsView: View {
                 }
             }
             .pickerStyle(.radioGroup)
+            .onChange(of: settings.selectedLLMProvider) { _, newValue in
+                if newValue == .appleIntelligence && !isAppleIntelligenceAvailable {
+                    settings.selectedLLMProvider = .ollama
+                }
+            }
         } header: {
             Text("Summarization Provider")
         } footer: {
@@ -173,23 +188,6 @@ struct LLMSettingsView: View {
         .padding(8)
         .background(.orange.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-
-    // MARK: - Custom Instructions
-
-    private var customInstructionsSection: some View {
-        Section {
-            TextEditor(text: $settings.customPromptInstructions)
-                .font(.body)
-                .frame(minHeight: 60, maxHeight: 120)
-                .scrollContentBackground(.hidden)
-        } header: {
-            Text("Custom Instructions")
-        } footer: {
-            Text("Guide what the summary focuses on, e.g. \"Focus on bug fixes and who authored them\" or \"Emphasize user-facing changes\".")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
     }
 
     // MARK: - Actions

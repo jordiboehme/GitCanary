@@ -78,7 +78,16 @@ final class AppSettings {
             CheckSchedule(hour: 9, minute: 0, weekdays: Set(2...6)),
         ]
         self.gitBinaryPath = d.string(forKey: "gitBinaryPath") ?? "/usr/bin/git"
-        self.selectedLLMProvider = LLMProviderType(rawValue: d.string(forKey: "selectedLLMProvider") ?? "") ?? .appleIntelligence
+        let loadedProvider = LLMProviderType(rawValue: d.string(forKey: "selectedLLMProvider") ?? "") ?? .appleIntelligence
+        if loadedProvider == .appleIntelligence {
+            if #available(macOS 26, *) {
+                self.selectedLLMProvider = loadedProvider
+            } else {
+                self.selectedLLMProvider = .ollama
+            }
+        } else {
+            self.selectedLLMProvider = loadedProvider
+        }
         self.ollamaBaseURL = d.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
         self.ollamaModel = d.string(forKey: "ollamaModel") ?? "llama3.2"
         self.claudeModel = d.string(forKey: "claudeModel") ?? "claude-sonnet-4-20250514"

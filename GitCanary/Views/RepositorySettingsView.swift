@@ -14,17 +14,25 @@ struct RepositorySettingsView: View {
             }
             .listStyle(.bordered)
 
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 Button(action: addRepository) {
                     Image(systemName: "plus")
+                        .frame(width: 24, height: 24)
                 }
+                .buttonStyle(.borderless)
+
                 Button(action: removeSelected) {
                     Image(systemName: "minus")
+                        .frame(width: 24, height: 24)
                 }
+                .buttonStyle(.borderless)
                 .disabled(selection == nil)
+
                 Spacer()
             }
             .padding(8)
+
+            branchSettings
         }
         .padding()
     }
@@ -46,7 +54,7 @@ struct RepositorySettingsView: View {
             Spacer()
 
             HStack(spacing: 8) {
-                Text(repo.trackingBranch)
+                Text(repo.activeBranch ?? repo.trackingBranch)
                     .font(.caption2)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 1)
@@ -59,6 +67,45 @@ struct RepositorySettingsView: View {
             }
         }
         .padding(.vertical, 2)
+    }
+
+    @ViewBuilder
+    private var branchSettings: some View {
+        if let id = selection, let index = appState.repositories.firstIndex(where: { $0.id == id }) {
+            @Bindable var state = appState
+            VStack(alignment: .leading, spacing: 8) {
+                Divider()
+                HStack(spacing: 12) {
+                    Text("Branch")
+                        .font(.caption.weight(.medium))
+
+                    Picker("", selection: $state.repositories[index].branchMode) {
+                        ForEach(BranchMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 120)
+                    .onChange(of: appState.repositories[index].branchMode) { _, _ in
+                        appState.saveAndRestart()
+                    }
+
+                    if appState.repositories[index].branchMode == .fixed {
+                        TextField("Branch name", text: $state.repositories[index].trackingBranch)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(maxWidth: 150)
+                            .onSubmit {
+                                appState.saveAndRestart()
+                            }
+                    } else {
+                        Text("Follows current branch")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .padding(.horizontal, 8)
+        }
     }
 
     private func addRepository() {

@@ -20,6 +20,7 @@
 		B10001066 /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002066 /* ScheduleSettingsView.swift */; };
 		B10001067 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002067 /* GeneralSettingsView.swift */; };
 		B10001068 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002068 /* AboutView.swift */; };
+		B10001070 /* CustomPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002070 /* CustomPromptView.swift */; };
 		B10001010 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002010 /* AppState.swift */; };
 		B10001011 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002011 /* AppSettings.swift */; };
 		B10001020 /* LLMProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002020 /* LLMProviderType.swift */; };
@@ -57,6 +58,7 @@
 		B10002066 /* ScheduleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsView.swift; sourceTree = "<group>"; };
 		B10002067 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		B10002068 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		B10002070 /* CustomPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPromptView.swift; sourceTree = "<group>"; };
 		B10002004 /* GitCanary.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitCanary.entitlements; sourceTree = "<group>"; };
 		B10002010 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		B10002011 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				B10002067 /* GeneralSettingsView.swift */,
 				B10002068 /* AboutView.swift */,
 				B10002069 /* SummaryDetailView.swift */,
+				B10002070 /* CustomPromptView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -309,6 +312,7 @@
 				B10001012 /* SummaryHistoryStore.swift in Sources */,
 				B10001013 /* SummaryWindowState.swift in Sources */,
 				B10001069 /* SummaryDetailView.swift in Sources */,
+				B10001070 /* CustomPromptView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -60,6 +60,12 @@ struct MenuBarView: View {
             }
             .simultaneousGesture(TapGesture().onEnded {
                 dismissPopover()
+                DispatchQueue.main.async {
+                    NSApp.activate(ignoringOtherApps: true)
+                    for window in NSApp.windows where window.identifier?.rawValue == "com_apple_SwiftUI_Settings_window" {
+                        window.makeKeyAndOrderFront(nil)
+                    }
+                }
             })
             .keyboardShortcut(",", modifiers: .command)
 

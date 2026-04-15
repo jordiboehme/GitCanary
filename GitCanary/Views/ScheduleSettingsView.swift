@@ -33,12 +33,16 @@ struct ScheduleSettingsView: View {
                 Section("Interval") {
                     HStack {
                         Text("Check every")
+                        Spacer()
+                        Text("\(settings.pollIntervalMinutes) min")
+                            .monospacedDigit()
                         Stepper(
-                            "\(settings.pollIntervalMinutes) min",
+                            "",
                             value: $settings.pollIntervalMinutes,
                             in: 1...240,
                             step: settings.pollIntervalMinutes < 10 ? 1 : 5
                         )
+                        .labelsHidden()
                     }
                 }
             }
