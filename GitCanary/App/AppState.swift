@@ -35,6 +35,7 @@ final class AppState {
         startPolling()
         setupWakeObserver()
         setupConnectivityObserver()
+        setupScheduleObserver()
 
         if connectivity.isConnected, let git = gitCLI {
             remotePoller.handleMissedSchedules(gitCLI: git, repositories: repositories)
@@ -310,6 +311,16 @@ final class AppState {
         connectivity.onConnectivityRestored = { [weak self] in
             guard let self, let git = gitCLI, !isPaused else { return }
             remotePoller.handleMissedSchedules(gitCLI: git, repositories: repositories)
+        }
+    }
+
+    private func setupScheduleObserver() {
+        NotificationCenter.default.addObserver(
+            forName: .pollingScheduleChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.restartMonitoring()
         }
     }
 

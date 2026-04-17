@@ -1,5 +1,9 @@
 import Foundation
 
+extension Notification.Name {
+    static let pollingScheduleChanged = Notification.Name("pollingScheduleChanged")
+}
+
 enum PollingMode: String, Codable, CaseIterable, Identifiable {
     case interval
     case scheduled
@@ -21,15 +25,24 @@ final class AppSettings {
     static let shared = AppSettings()
 
     var pollingMode: PollingMode {
-        didSet { save("pollingMode", pollingMode.rawValue) }
+        didSet {
+            save("pollingMode", pollingMode.rawValue)
+            notifyScheduleChanged()
+        }
     }
 
     var pollIntervalMinutes: Int {
-        didSet { save("pollIntervalMinutes", pollIntervalMinutes) }
+        didSet {
+            save("pollIntervalMinutes", pollIntervalMinutes)
+            notifyScheduleChanged()
+        }
     }
 
     var scheduledChecks: [CheckSchedule] {
-        didSet { saveJSON("scheduledChecks", scheduledChecks) }
+        didSet {
+            saveJSON("scheduledChecks", scheduledChecks)
+            notifyScheduleChanged()
+        }
     }
 
     var gitBinaryPath: String {
@@ -104,6 +117,10 @@ final class AppSettings {
 
     private func save(_ key: String, _ value: Any) {
         defaults.set(value, forKey: key)
+    }
+
+    private func notifyScheduleChanged() {
+        NotificationCenter.default.post(name: .pollingScheduleChanged, object: nil)
     }
 
     private func saveJSON<T: Encodable>(_ key: String, _ value: T) {
