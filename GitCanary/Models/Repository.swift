@@ -30,6 +30,22 @@ enum BranchMode: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+enum RepositorySortOrder: String, Codable, CaseIterable, Identifiable {
+    case dateAdded
+    case name
+    case path
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .dateAdded: "Date Added"
+        case .name: "Name"
+        case .path: "Path"
+        }
+    }
+}
+
 struct Repository: Identifiable, Equatable {
     let id: UUID
     var name: String

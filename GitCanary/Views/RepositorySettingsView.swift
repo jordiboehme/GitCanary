@@ -2,12 +2,24 @@ import SwiftUI
 
 struct RepositorySettingsView: View {
     @Environment(AppState.self) private var appState
+    @State private var settings = AppSettings.shared
     @State private var selection: UUID?
+
+    private var sortedRepositories: [Repository] {
+        switch settings.repositorySortOrder {
+        case .dateAdded:
+            return appState.repositories
+        case .name:
+            return appState.repositories.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        case .path:
+            return appState.repositories.sorted { $0.path.localizedCaseInsensitiveCompare($1.path) == .orderedAscending }
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             List(selection: $selection) {
-                ForEach(appState.repositories) { repo in
+                ForEach(sortedRepositories) { repo in
                     repositoryRow(repo)
                         .tag(repo.id)
                 }
@@ -29,6 +41,19 @@ struct RepositorySettingsView: View {
                 .disabled(selection == nil)
 
                 Spacer()
+
+                Menu {
+                    Picker("Sort by", selection: $settings.repositorySortOrder) {
+                        ForEach(RepositorySortOrder.allCases) { order in
+                            Text(order.displayName).tag(order)
+                        }
+                    }
+                } label: {
+                    Label("Sort: \(settings.repositorySortOrder.displayName)", systemImage: "arrow.up.arrow.down")
+                        .font(.caption)
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
             }
             .padding(8)
 

@@ -68,6 +68,10 @@ final class AppSettings {
         didSet { save("customPromptInstructions", customPromptInstructions) }
     }
 
+    var repositorySortOrder: RepositorySortOrder {
+        didSet { save("repositorySortOrder", repositorySortOrder.rawValue) }
+    }
+
     private let defaults = UserDefaults.standard
 
     private init() {
@@ -95,6 +99,7 @@ final class AppSettings {
         self.deferLLMToBattery = d.bool(forKey: "deferLLMToBattery")
         self.maxCommitsToSummarize = d.object(forKey: "maxCommitsToSummarize") as? Int ?? 50
         self.customPromptInstructions = d.string(forKey: "customPromptInstructions") ?? ""
+        self.repositorySortOrder = RepositorySortOrder(rawValue: d.string(forKey: "repositorySortOrder") ?? "") ?? .dateAdded
     }
 
     private func save(_ key: String, _ value: Any) {

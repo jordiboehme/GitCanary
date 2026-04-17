@@ -9,20 +9,10 @@
 /* Begin PBXBuildFile section */
 		B10001001 /* GitCanaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002001 /* GitCanaryApp.swift */; };
 		B10001003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10002003 /* Assets.xcassets */; };
-		B10001052 /* PowerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002052 /* PowerMonitor.swift */; };
-		B10001053 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002053 /* ConnectivityMonitor.swift */; };
-		B10001060 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002060 /* MenuBarView.swift */; };
-		B10001061 /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002061 /* RepositoryRow.swift */; };
-		B10001062 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002062 /* SummaryView.swift */; };
-		B10001063 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002063 /* SettingsView.swift */; };
-		B10001064 /* RepositorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002064 /* RepositorySettingsView.swift */; };
-		B10001065 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002065 /* LLMSettingsView.swift */; };
-		B10001066 /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002066 /* ScheduleSettingsView.swift */; };
-		B10001067 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002067 /* GeneralSettingsView.swift */; };
-		B10001068 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002068 /* AboutView.swift */; };
-		B10001070 /* CustomPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002070 /* CustomPromptView.swift */; };
 		B10001010 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002010 /* AppState.swift */; };
 		B10001011 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002011 /* AppSettings.swift */; };
+		B10001012 /* SummaryHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002012 /* SummaryHistoryStore.swift */; };
+		B10001013 /* SummaryWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002013 /* SummaryWindowState.swift */; };
 		B10001020 /* LLMProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002020 /* LLMProviderType.swift */; };
 		B10001021 /* CommitInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002021 /* CommitInfo.swift */; };
 		B10001022 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002022 /* Repository.swift */; };
@@ -39,29 +29,29 @@
 		B10001045 /* AppleIntelligenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002045 /* AppleIntelligenceService.swift */; };
 		B10001050 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002050 /* KeychainManager.swift */; };
 		B10001051 /* BookmarkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002051 /* BookmarkManager.swift */; };
-		B10001012 /* SummaryHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002012 /* SummaryHistoryStore.swift */; };
-		B10001013 /* SummaryWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002013 /* SummaryWindowState.swift */; };
+		B10001052 /* PowerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002052 /* PowerMonitor.swift */; };
+		B10001053 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002053 /* ConnectivityMonitor.swift */; };
+		B10001060 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002060 /* MenuBarView.swift */; };
+		B10001061 /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002061 /* RepositoryRow.swift */; };
+		B10001062 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002062 /* SummaryView.swift */; };
+		B10001063 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002063 /* SettingsView.swift */; };
+		B10001064 /* RepositorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002064 /* RepositorySettingsView.swift */; };
+		B10001065 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002065 /* LLMSettingsView.swift */; };
+		B10001066 /* ScheduleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002066 /* ScheduleSettingsView.swift */; };
+		B10001067 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002067 /* GeneralSettingsView.swift */; };
+		B10001068 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002068 /* AboutView.swift */; };
 		B10001069 /* SummaryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002069 /* SummaryDetailView.swift */; };
+		B10001070 /* CustomPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002070 /* CustomPromptView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B10002001 /* GitCanaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCanaryApp.swift; sourceTree = "<group>"; };
 		B10002003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B10002052 /* PowerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMonitor.swift; sourceTree = "<group>"; };
-		B10002053 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
-		B10002060 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
-		B10002061 /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryRow.swift; sourceTree = "<group>"; };
-		B10002062 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
-		B10002063 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		B10002064 /* RepositorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositorySettingsView.swift; sourceTree = "<group>"; };
-		B10002065 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
-		B10002066 /* ScheduleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsView.swift; sourceTree = "<group>"; };
-		B10002067 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
-		B10002068 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
-		B10002070 /* CustomPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPromptView.swift; sourceTree = "<group>"; };
 		B10002004 /* GitCanary.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitCanary.entitlements; sourceTree = "<group>"; };
 		B10002010 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		B10002011 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		B10002012 /* SummaryHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryHistoryStore.swift; sourceTree = "<group>"; };
+		B10002013 /* SummaryWindowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryWindowState.swift; sourceTree = "<group>"; };
 		B10002020 /* LLMProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProviderType.swift; sourceTree = "<group>"; };
 		B10002021 /* CommitInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitInfo.swift; sourceTree = "<group>"; };
 		B10002022 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
@@ -78,9 +68,19 @@
 		B10002045 /* AppleIntelligenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceService.swift; sourceTree = "<group>"; };
 		B10002050 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		B10002051 /* BookmarkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkManager.swift; sourceTree = "<group>"; };
-		B10002012 /* SummaryHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryHistoryStore.swift; sourceTree = "<group>"; };
-		B10002013 /* SummaryWindowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryWindowState.swift; sourceTree = "<group>"; };
+		B10002052 /* PowerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerMonitor.swift; sourceTree = "<group>"; };
+		B10002053 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
+		B10002060 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B10002061 /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryRow.swift; sourceTree = "<group>"; };
+		B10002062 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
+		B10002063 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10002064 /* RepositorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositorySettingsView.swift; sourceTree = "<group>"; };
+		B10002065 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
+		B10002066 /* ScheduleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsView.swift; sourceTree = "<group>"; };
+		B10002067 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
+		B10002068 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		B10002069 /* SummaryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryDetailView.swift; sourceTree = "<group>"; };
+		B10002070 /* CustomPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPromptView.swift; sourceTree = "<group>"; };
 		B10003000 /* GitCanary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitCanary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
