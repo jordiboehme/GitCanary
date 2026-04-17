@@ -41,6 +41,14 @@ final class RemotePoller {
         let now = Date()
         let appLastActive = UserDefaults.standard.object(forKey: "lastActiveDate") as? Date ?? now
 
+        if settings.pollingMode == .interval || settings.pollingMode == .both {
+            let interval = TimeInterval(settings.pollIntervalMinutes * 60)
+            if now.timeIntervalSince(appLastActive) >= interval {
+                checkNow(gitCLI: gitCLI, repositories: repositories)
+                return
+            }
+        }
+
         for schedule in settings.scheduledChecks {
             if schedule.lastMissedDate(since: appLastActive, now: now) != nil {
                 checkNow(gitCLI: gitCLI, repositories: repositories)

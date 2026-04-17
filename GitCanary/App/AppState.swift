@@ -320,7 +320,11 @@ final class AppState {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.restartMonitoring()
+            guard let self else { return }
+            restartMonitoring()
+            if !isPaused, let git = gitCLI, connectivity.isConnected {
+                remotePoller.handleMissedSchedules(gitCLI: git, repositories: repositories)
+            }
         }
     }
 
