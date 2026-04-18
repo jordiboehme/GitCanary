@@ -149,7 +149,7 @@ jobs:
 
             postflight do
               system_command "/usr/bin/open",
-                             args: ["-gj", "#{appdir}/GitCanary.app"]
+                             args: ["-g", "#{appdir}/GitCanary.app"]
             end
 
             uninstall quit: "com.jordiboehme.GitCanary"
