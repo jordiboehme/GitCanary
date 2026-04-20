@@ -162,17 +162,21 @@ final class AppState {
         case .noChanges:
             logger.info("\(self.repositories[index].name) — no changes")
             repositories[index].lastCheckedDate = Date()
+            repositories[index].status = .idle
 
-            if repositories[index].latestSummary == nil {
-                generateInitialSummary(repoIndex: index)
-            } else {
-                repositories[index].status = .idle
-            }
+        case .syncedSilently(let localHash, let remoteHash):
+            logger.info("\(self.repositories[index].name) — synced silently (local=\(localHash ?? "nil") remote=\(remoteHash))")
+            repositories[index].lastCheckedDate = Date()
+            repositories[index].lastRemoteHash = remoteHash
+            repositories[index].lastLocalHeadHash = localHash
+            repositories[index].status = .idle
+            saveRepositories()
 
         case .newCommits(let commits, let fromHash, let toHash):
             logger.info("\(self.repositories[index].name) — \(commits.count) commits")
             repositories[index].lastCheckedDate = Date()
             repositories[index].lastRemoteHash = toHash
+            repositories[index].lastLocalHeadHash = fromHash
             repositories[index].status = .hasChanges(count: commits.count)
             saveRepositories()
             summarize(repoIndex: index, commits: commits, fromHash: fromHash, toHash: toHash)
@@ -184,50 +188,6 @@ final class AppState {
     }
 
     // MARK: - Summarization
-
-    private func generateInitialSummary(repoIndex: Int) {
-        let repo = repositories[repoIndex]
-        guard let git = gitCLI else { return }
-
-        repositories[repoIndex].status = .fetching
-
-        Task {
-            do {
-                let directory = repo.path
-                try await git.fetch(remote: repo.remoteName, in: directory)
-
-                let range = "\(repo.remoteName)/\(repo.trackingBranch)"
-                let logOutput = try await git.log(range: range, in: directory, maxCount: settings.maxCommitsToSummarize)
-                let commits = GitLogParser.parse(logOutput)
-
-                guard !commits.isEmpty else {
-                    DispatchQueue.main.async {
-                        if let idx = self.repositories.firstIndex(where: { $0.id == repo.id }) {
-                            self.repositories[idx].status = .idle
-                        }
-                    }
-                    return
-                }
-
-                let toHash = repo.lastRemoteHash ?? commits.first?.hash ?? ""
-                let fromHash = commits.last?.hash ?? ""
-
-                DispatchQueue.main.async {
-                    if let idx = self.repositories.firstIndex(where: { $0.id == repo.id }) {
-                        self.repositories[idx].status = .hasChanges(count: commits.count)
-                        self.summarize(repoIndex: idx, commits: commits, fromHash: fromHash, toHash: toHash)
-                    }
-                }
-            } catch {
-                logger.error("\(repo.name) — initial summary failed: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    if let idx = self.repositories.firstIndex(where: { $0.id == repo.id }) {
-                        self.repositories[idx].status = .error(error.localizedDescription)
-                    }
-                }
-            }
-        }
-    }
 
     private func summarize(repoIndex: Int, commits: [CommitInfo], fromHash: String, toHash: String) {
         // Defer summarization if on battery and setting is enabled

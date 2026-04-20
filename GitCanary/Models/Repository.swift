@@ -57,6 +57,7 @@ struct Repository: Identifiable, Equatable {
     var activeBranch: String?
     var lastCheckedDate: Date?
     var lastRemoteHash: String?
+    var lastLocalHeadHash: String?
     var status: RepositoryStatus
     var latestSummary: DiffSummary?
     var isEnabled: Bool
@@ -81,6 +82,7 @@ struct Repository: Identifiable, Equatable {
         self.activeBranch = nil
         self.lastCheckedDate = nil
         self.lastRemoteHash = nil
+        self.lastLocalHeadHash = nil
         self.status = .idle
         self.latestSummary = nil
         self.isEnabled = isEnabled
@@ -96,6 +98,7 @@ struct PersistedRepository: Codable {
     var branchMode: BranchMode?
     var trackingBranch: String
     var lastRemoteHash: String?
+    var lastLocalHeadHash: String?
     var isEnabled: Bool
 
     init(from repo: Repository) {
@@ -107,6 +110,7 @@ struct PersistedRepository: Codable {
         self.branchMode = repo.branchMode
         self.trackingBranch = repo.trackingBranch
         self.lastRemoteHash = repo.lastRemoteHash
+        self.lastLocalHeadHash = repo.lastLocalHeadHash
         self.isEnabled = repo.isEnabled
     }
 
@@ -122,6 +126,7 @@ struct PersistedRepository: Codable {
             isEnabled: isEnabled
         )
         repo.lastRemoteHash = lastRemoteHash
+        repo.lastLocalHeadHash = lastLocalHeadHash
         return repo
     }
 }

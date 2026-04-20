@@ -3,6 +3,7 @@ import os
 
 enum PollResult {
     case noChanges
+    case syncedSilently(localHash: String?, remoteHash: String)
     case newCommits(commits: [CommitInfo], fromHash: String, toHash: String)
     case error(String)
 }
@@ -163,46 +164,62 @@ final class RemotePoller {
                 )
             }
 
-            // Reset lastRemoteHash when the monitored branch changed
+            // Reset cached hashes when the monitored branch changed
             let branchChanged = repo.activeBranch != nil && repo.activeBranch != effectiveBranch
-            let lastHash = branchChanged ? nil : repo.lastRemoteHash
+            let lastRemote = branchChanged ? nil : repo.lastRemoteHash
+            let lastLocal = branchChanged ? nil : repo.lastLocalHeadHash
 
-            // Compare with last known hash
-            if let lastHash, lastHash == remoteHash {
+            // Local tip for the monitored branch (nil if the branch doesn't
+            // exist locally yet — e.g., fresh clone without it checked out).
+            let localBranchHash = try? await gitCLI.revParse(effectiveBranch, in: directory)
+
+            // Fast path: nothing moved on either side since last poll.
+            if lastLocal == localBranchHash, lastRemote == remoteHash {
                 return ResolvedPoll(result: .noChanges, activeBranch: effectiveBranch)
             }
 
-            // Fetch new objects
-            try await gitCLI.fetch(remote: repo.remoteName, in: directory)
-
-            // Get commit log
-            let maxCount = AppSettings.shared.maxCommitsToSummarize
-            let range: String
-            let fromHash: String
-
-            if let lastHash {
-                range = "\(lastHash)..\(remoteHash)"
-                fromHash = lastHash
-            } else {
-                range = "\(repo.remoteName)/\(effectiveBranch)"
-                fromHash = ""
+            // First poll (or branch switch): silently baseline the hashes
+            // without summarizing or notifying.
+            if lastLocal == nil, lastRemote == nil {
+                return ResolvedPoll(
+                    result: .syncedSilently(localHash: localBranchHash, remoteHash: remoteHash),
+                    activeBranch: effectiveBranch
+                )
             }
 
+            // Something moved — fetch new objects so localBranchHash..remoteHash is computable.
+            try await gitCLI.fetch(remote: repo.remoteName, in: directory)
+
+            // Without a local counterpart there's nothing to diff against;
+            // baseline silently.
+            guard let localBranchHash else {
+                return ResolvedPoll(
+                    result: .syncedSilently(localHash: nil, remoteHash: remoteHash),
+                    activeBranch: effectiveBranch
+                )
+            }
+
+            let maxCount = AppSettings.shared.maxCommitsToSummarize
             let logOutput = try await gitCLI.log(
-                range: range,
+                range: "\(localBranchHash)..\(remoteHash)",
                 in: directory,
                 maxCount: maxCount
             )
             let commits = GitLogParser.parse(logOutput)
 
             if commits.isEmpty {
-                return ResolvedPoll(result: .noChanges, activeBranch: effectiveBranch)
+                // Remote hash moved but local already contains the remote tip
+                // (user pulled, or remote rewound) — no unpulled work.
+                return ResolvedPoll(
+                    result: .syncedSilently(localHash: localBranchHash, remoteHash: remoteHash),
+                    activeBranch: effectiveBranch
+                )
             }
 
             return ResolvedPoll(
                 result: .newCommits(
                     commits: commits,
-                    fromHash: fromHash.isEmpty ? (commits.last?.hash ?? remoteHash) : fromHash,
+                    fromHash: localBranchHash,
                     toHash: remoteHash
                 ),
                 activeBranch: effectiveBranch
