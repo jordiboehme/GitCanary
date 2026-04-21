@@ -17,6 +17,12 @@ A native macOS menu bar app that monitors git repositories and provides AI-gener
 - **Flexible scheduling** — interval polling, scheduled check times (e.g., 09:00 Mon–Fri), or both
 - **Missed schedule catch-up** — if your Mac was off at 09:00, the summary runs when you open the lid and connectivity is established
 - **Multiple repositories** — monitor as many repos as you need from one menu bar icon
+- **Drag-and-drop onboarding** — drop a repo folder onto the menu bar icon to start monitoring it
+- **Summary history** — browse past summaries, filter by repository, and track what's unread
+- **Copy & export** — copy any summary to the clipboard or export it to a Markdown file
+- **Per-repo branch tracking** — follow the currently checked-out branch automatically, or pin to a specific branch
+- **Check now & pause** — trigger an immediate check of all repos, or pause monitoring without removing them
+- **Launch at login** — optional auto-start so GitCanary is running whenever you are
 - **Power-aware** — optionally defer AI summarization when on battery
 
 ## AI Providers
