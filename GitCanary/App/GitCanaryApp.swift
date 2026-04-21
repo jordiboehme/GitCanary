@@ -6,6 +6,7 @@ struct GitCanaryApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var appState = AppState.shared
     @State private var windowState = SummaryWindowState.shared
+    @State private var historyStore = SummaryHistoryStore.shared
     @Environment(\.openWindow) private var openWindow
 
     var body: some Scene {
@@ -14,12 +15,13 @@ struct GitCanaryApp: App {
                 .environment(appState)
         } label: {
             Group {
+                let iconName = historyStore.hasUnread ? "MenuBarIcon" : "MenuBarIconOutline"
                 if appState.isPaused {
-                    Image("MenuBarIcon")
+                    Image(iconName)
                         .renderingMode(.template)
                         .foregroundStyle(.secondary)
                 } else if appState.repositories.contains(where: { $0.status == .summarizing }) {
-                    Image("MenuBarIcon")
+                    Image(iconName)
                         .renderingMode(.template)
                         .phaseAnimator([1.0, 0.4]) { view, phase in
                             view.opacity(phase)
@@ -27,7 +29,7 @@ struct GitCanaryApp: App {
                             .easeInOut(duration: 1.0)
                         }
                 } else {
-                    Image("MenuBarIcon")
+                    Image(iconName)
                         .renderingMode(.template)
                 }
             }

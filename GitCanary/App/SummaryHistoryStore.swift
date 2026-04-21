@@ -5,6 +5,7 @@ final class SummaryHistoryStore {
     static let shared = SummaryHistoryStore()
 
     private(set) var summaries: [DiffSummary] = []
+    var hasUnread: Bool { summaries.contains(where: { !$0.isRead }) }
     private let directory: URL
 
     private init() {
