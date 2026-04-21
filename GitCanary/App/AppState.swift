@@ -198,12 +198,21 @@ final class AppState {
         let repo = repositories[repoIndex]
         repositories[repoIndex].status = .summarizing
 
+        // Fold any prior unread summaries for this repo into the new one so
+        // the user only has one catch-up summary to read.
+        let unreadPrior = historyStore.summaries(for: repo.id)
+            .filter { !$0.isRead }
+            .sorted { $0.generatedAt < $1.generatedAt }   // oldest first
+
+        let combinedCommits = mergeCommits(priorUnread: unreadPrior, fresh: commits)
+        let effectiveFromHash = unreadPrior.first?.fromHash ?? fromHash
+
         Task {
             let service = currentLLMService()
             do {
-                let diffStat = try? await gitCLI?.diff(range: "\(fromHash)..\(toHash)", in: repo.path)
+                let diffStat = try? await gitCLI?.diff(range: "\(effectiveFromHash)..\(toHash)", in: repo.path)
                 let summary = try await service.summarize(
-                    commits: commits,
+                    commits: combinedCommits,
                     diff: diffStat,
                     repositoryName: repo.name
                 )
@@ -212,8 +221,8 @@ final class AppState {
                     repositoryID: repo.id,
                     provider: settings.selectedLLMProvider,
                     summary: summary,
-                    commits: commits,
-                    fromHash: fromHash,
+                    commits: combinedCommits,
+                    fromHash: effectiveFromHash,
                     toHash: toHash
                 )
 
@@ -221,8 +230,11 @@ final class AppState {
                     repositories[idx].latestSummary = diffSummary
                     repositories[idx].status = .idle
                 }
+                for prior in unreadPrior {
+                    historyStore.delete(prior.id)
+                }
                 historyStore.add(diffSummary)
-                sendNotification(repoName: repo.name, commitCount: commits.count, summary: summary, repoID: repo.id, summaryID: diffSummary.id)
+                sendNotification(repoName: repo.name, commitCount: combinedCommits.count, summary: summary, repoID: repo.id, summaryID: diffSummary.id)
             } catch {
                 logger.error("\(repo.name) — summary failed: \(error.localizedDescription)")
                 if let idx = repositories.firstIndex(where: { $0.id == repo.id }) {
@@ -230,6 +242,29 @@ final class AppState {
                 }
             }
         }
+    }
+
+    private func mergeCommits(priorUnread: [DiffSummary], fresh: [CommitInfo]) -> [CommitInfo] {
+        guard !priorUnread.isEmpty else { return fresh }
+
+        var seen = Set<String>()
+        var merged: [CommitInfo] = []
+        for summary in priorUnread {
+            for commit in summary.commits where seen.insert(commit.hash).inserted {
+                merged.append(commit)
+            }
+        }
+        for commit in fresh where seen.insert(commit.hash).inserted {
+            merged.append(commit)
+        }
+
+        // Match git log ordering (newest first) and cap at the user's limit.
+        merged.sort { $0.timestamp > $1.timestamp }
+        let limit = settings.maxCommitsToSummarize
+        if merged.count > limit {
+            merged = Array(merged.prefix(limit))
+        }
+        return merged
     }
 
     func currentLLMService() -> any LLMService {

@@ -9,6 +9,7 @@ struct DiffSummary: Identifiable, Equatable, Codable {
     let commits: [CommitInfo]
     let fromHash: String
     let toHash: String
+    var isRead: Bool
 
     init(
         id: UUID = UUID(),
@@ -18,7 +19,8 @@ struct DiffSummary: Identifiable, Equatable, Codable {
         summary: String,
         commits: [CommitInfo],
         fromHash: String,
-        toHash: String
+        toHash: String,
+        isRead: Bool = false
     ) {
         self.id = id
         self.repositoryID = repositoryID
@@ -28,10 +30,11 @@ struct DiffSummary: Identifiable, Equatable, Codable {
         self.commits = commits
         self.fromHash = fromHash
         self.toHash = toHash
+        self.isRead = isRead
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, repositoryID, generatedAt, provider, summary, commits, fromHash, toHash
+        case id, repositoryID, generatedAt, provider, summary, commits, fromHash, toHash, isRead
     }
 
     init(from decoder: Decoder) throws {
@@ -44,5 +47,6 @@ struct DiffSummary: Identifiable, Equatable, Codable {
         commits = try container.decode([CommitInfo].self, forKey: .commits)
         fromHash = try container.decode(String.self, forKey: .fromHash)
         toHash = try container.decode(String.self, forKey: .toHash)
+        isRead = try container.decodeIfPresent(Bool.self, forKey: .isRead) ?? false
     }
 }
