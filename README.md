@@ -46,6 +46,8 @@ Default priority: Apple Intelligence (if available) → Ollama → Cloud provide
 
 ### Homebrew (recommended)
 
+New to [Homebrew](https://brew.sh/)? It's the standard macOS package manager — install it first, then:
+
 ```bash
 brew tap jordiboehme/tap
 brew install --cask gitcanary
