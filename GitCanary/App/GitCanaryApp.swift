@@ -15,14 +15,20 @@ struct GitCanaryApp: App {
         } label: {
             Group {
                 if appState.isPaused {
-                    Image(systemName: "bird.fill")
-                        .symbolRenderingMode(.hierarchical)
+                    Image("MenuBarIcon")
+                        .renderingMode(.template)
                         .foregroundStyle(.secondary)
                 } else if appState.repositories.contains(where: { $0.status == .summarizing }) {
-                    Image(systemName: "bird.fill")
-                        .symbolEffect(.pulse)
+                    Image("MenuBarIcon")
+                        .renderingMode(.template)
+                        .phaseAnimator([1.0, 0.4]) { view, phase in
+                            view.opacity(phase)
+                        } animation: { _ in
+                            .easeInOut(duration: 1.0)
+                        }
                 } else {
-                    Image(systemName: "bird.fill")
+                    Image("MenuBarIcon")
+                        .renderingMode(.template)
                 }
             }
             .background { SettingsCapture() }
