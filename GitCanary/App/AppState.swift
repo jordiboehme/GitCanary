@@ -81,6 +81,11 @@ final class AppState {
     // MARK: - Repositories
 
     func addRepository(url: URL) {
+        _ = addRepositoryReturningID(url: url)
+    }
+
+    @discardableResult
+    func addRepositoryReturningID(url: URL) -> UUID {
         let name = url.lastPathComponent
         logger.info("Adding repo \(name) at \(url.path)")
         let bookmarkData = try? BookmarkManager.createBookmark(for: url)
@@ -90,9 +95,11 @@ final class AppState {
             path: url.path,
             bookmarkData: bookmarkData
         )
+        let repoID = repo.id
 
-        // Detect branch and remote
-        Task {
+        // Detect branch and remote; mutate on the main actor so SwiftUI's
+        // @Observable propagation hits the current render tick.
+        Task { @MainActor in
             if let git = gitCLI {
                 if let branch = try? await git.currentBranch(in: url.path) {
                     repo.trackingBranch = branch
@@ -105,6 +112,22 @@ final class AppState {
             saveRepositories()
             restartMonitoring()
         }
+
+        return repoID
+    }
+
+    @discardableResult
+    func addRepositories(from urls: [URL]) -> [UUID] {
+        var seenPaths = Set(repositories.map { $0.path })
+        var added: [UUID] = []
+        for source in urls {
+            for repoURL in GitRepoScanner.findRepositories(at: source) {
+                guard seenPaths.insert(repoURL.path).inserted else { continue }
+                let id = addRepositoryReturningID(url: repoURL)
+                added.append(id)
+            }
+        }
+        return added
     }
 
     func removeRepository(id: UUID) {

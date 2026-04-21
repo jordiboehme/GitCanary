@@ -1,5 +1,47 @@
 import Foundation
 
+enum GitRepoScanner {
+    static let maxDepth = 4
+    static let skipNames: Set<String> = [
+        ".git", "node_modules", ".build", "DerivedData",
+        "Library", ".Trash", "Pods", ".venv", "venv", "__pycache__"
+    ]
+
+    static func findRepositories(at url: URL) -> [URL] {
+        if isGitRepo(url) { return [url] }
+        return scan(url, depth: 0)
+    }
+
+    private static func isGitRepo(_ url: URL) -> Bool {
+        var isDir: ObjCBool = false
+        let gitPath = url.appendingPathComponent(".git").path
+        return FileManager.default.fileExists(atPath: gitPath, isDirectory: &isDir)
+    }
+
+    private static func scan(_ url: URL, depth: Int) -> [URL] {
+        guard depth < maxDepth,
+              let entries = try? FileManager.default.contentsOfDirectory(
+                at: url,
+                includingPropertiesForKeys: [.isDirectoryKey],
+                options: [.skipsHiddenFiles]
+              )
+        else { return [] }
+
+        var found: [URL] = []
+        for entry in entries {
+            guard (try? entry.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true,
+                  !skipNames.contains(entry.lastPathComponent)
+            else { continue }
+            if isGitRepo(entry) {
+                found.append(entry)
+            } else {
+                found.append(contentsOf: scan(entry, depth: depth + 1))
+            }
+        }
+        return found
+    }
+}
+
 enum GitError: LocalizedError {
     case binaryNotFound(String)
     case notARepository(String)

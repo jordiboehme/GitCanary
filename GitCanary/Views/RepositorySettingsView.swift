@@ -3,6 +3,7 @@ import SwiftUI
 struct RepositorySettingsView: View {
     @Environment(AppState.self) private var appState
     @State private var settings = AppSettings.shared
+    @State private var navigator = SettingsNavigator.shared
     @State private var selection: UUID?
 
     private var sortedRepositories: [Repository] {
@@ -60,6 +61,17 @@ struct RepositorySettingsView: View {
             branchSettings
         }
         .padding()
+        .onAppear { applyPendingSelection() }
+        .onChange(of: navigator.pendingSelectedRepoID) {
+            applyPendingSelection()
+        }
+    }
+
+    private func applyPendingSelection() {
+        if let id = navigator.pendingSelectedRepoID {
+            selection = id
+            navigator.pendingSelectedRepoID = nil
+        }
     }
 
     private func repositoryRow(_ repo: Repository) -> some View {
@@ -137,12 +149,15 @@ struct RepositorySettingsView: View {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.allowsMultipleSelection = false
-        panel.message = "Select a git repository"
+        panel.allowsMultipleSelection = true
+        panel.message = "Select a git repository or a folder containing repositories"
         panel.prompt = "Add"
 
-        if panel.runModal() == .OK, let url = panel.url {
-            appState.addRepository(url: url)
+        if panel.runModal() == .OK, !panel.urls.isEmpty {
+            let added = appState.addRepositories(from: panel.urls)
+            if added.count == 1, let id = added.first {
+                selection = id
+            }
         }
     }
 

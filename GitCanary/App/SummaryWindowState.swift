@@ -2,6 +2,15 @@ import Foundation
 import SwiftUI
 
 @Observable
+final class SettingsNavigator {
+    static let shared = SettingsNavigator()
+    var targetRepositoriesTab: Bool = false
+    var pendingSelectedRepoID: UUID?
+    var openSettingsAction: OpenSettingsAction?
+    private init() {}
+}
+
+@Observable
 final class SummaryWindowState {
     static let shared = SummaryWindowState()
 

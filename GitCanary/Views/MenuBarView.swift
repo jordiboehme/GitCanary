@@ -3,6 +3,7 @@ import SwiftUI
 struct MenuBarView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -37,14 +38,14 @@ struct MenuBarView: View {
                 Divider()
             }
 
+            menuButton("View Summaries", icon: "text.document") {
+                openSummaryWindow()
+            }
+
             menuButton("Check All Now", icon: "arrow.clockwise") {
                 appState.checkAllNow()
             }
             .disabled(appState.repositories.isEmpty || !appState.gitAvailable)
-
-            menuButton("View Summaries", icon: "text.document") {
-                openSummaryWindow()
-            }
 
             menuButton(
                 appState.isPaused ? "Resume Monitoring" : "Pause Monitoring",
@@ -80,6 +81,7 @@ struct MenuBarView: View {
         .frame(width: 260)
         .onAppear {
             SummaryWindowState.shared.openWindowAction = openWindow
+            SettingsNavigator.shared.openSettingsAction = openSettings
         }
     }
 
