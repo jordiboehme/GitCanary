@@ -51,6 +51,14 @@ final class SummaryHistoryStore {
         save(summaries[index])
     }
 
+    func markUnread(_ summaryID: UUID) {
+        guard let index = summaries.firstIndex(where: { $0.id == summaryID }),
+              summaries[index].isRead
+        else { return }
+        summaries[index].isRead = false
+        save(summaries[index])
+    }
+
     // MARK: - Private
 
     private func load() {

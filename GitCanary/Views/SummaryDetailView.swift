@@ -34,16 +34,26 @@ struct SummaryDetailView: View {
     @Environment(AppState.self) private var appState
     @State private var windowState = SummaryWindowState.shared
     @State private var historyStore = SummaryHistoryStore.shared
-    @State private var sidebarSelection: SidebarSelection = .overview
+    @State private var sidebarSelection: Set<SidebarSelection> = [.overview]
     @AppStorage("summarySortOrder") private var sortOrderRaw = SummarySortOrder.newestFirst.rawValue
 
     private var sortOrder: SummarySortOrder {
         SummarySortOrder(rawValue: sortOrderRaw) ?? .newestFirst
     }
 
+    private var selectedSummaryIDs: [UUID] {
+        sidebarSelection.compactMap {
+            if case .summary(let id) = $0 { return id } else { return nil }
+        }
+    }
+
     private var selectedSummaryID: UUID? {
-        if case .summary(let id) = sidebarSelection { return id }
-        return nil
+        selectedSummaryIDs.count == 1 ? selectedSummaryIDs.first : nil
+    }
+
+    private var selectedSummaries: [DiffSummary] {
+        let ids = Set(selectedSummaryIDs)
+        return groupedSummaries.flatMap(\.summaries).filter { ids.contains($0.id) }
     }
 
     var body: some View {
@@ -55,15 +65,15 @@ struct SummaryDetailView: View {
         .frame(minWidth: 500, minHeight: 400)
         .onAppear {
             applyWindowState()
-            if case .summary(let id) = sidebarSelection {
+            if let id = selectedSummaryID {
                 historyStore.markRead(id)
             }
         }
         .onChange(of: windowState.openTrigger) {
             applyWindowState()
         }
-        .onChange(of: sidebarSelection) { _, newValue in
-            if case .summary(let id) = newValue {
+        .onChange(of: sidebarSelection) { _, _ in
+            if let id = selectedSummaryID {
                 historyStore.markRead(id)
             }
         }
@@ -96,6 +106,14 @@ struct SummaryDetailView: View {
             }
         }
         .listStyle(.sidebar)
+        .contextMenu(forSelectionType: SidebarSelection.self) { items in
+            let summaryIDs: [UUID] = items.compactMap {
+                if case .summary(let id) = $0 { return id } else { return nil }
+            }
+            if !summaryIDs.isEmpty {
+                summaryContextMenu(forIDs: summaryIDs)
+            }
+        }
         .navigationSplitViewColumnWidth(min: 200, ideal: 240, max: 320)
         .safeAreaInset(edge: .top, spacing: 0) {
             if !repoPickerOptions.isEmpty {
@@ -147,7 +165,7 @@ struct SummaryDetailView: View {
                 } else {
                     firstID = historyStore.summaries.first?.id
                 }
-                sidebarSelection = firstID.map(SidebarSelection.summary) ?? .overview
+                sidebarSelection = firstID.map { [SidebarSelection.summary($0)] } ?? [.overview]
             }
         )) {
             Text("All Repositories").tag(nil as UUID?)
@@ -234,45 +252,11 @@ struct SummaryDetailView: View {
 
     @ViewBuilder
     private var detail: some View {
-        if let summaryID = selectedSummaryID,
-           let summary = historyStore.summaries.first(where: { $0.id == summaryID })
-        {
-            let repo = appState.repositories.first(where: { $0.id == summary.repositoryID })
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    detailHeader(summary: summary, repo: repo)
-                    Divider()
-                    summarySection(summary)
-                    Divider()
-                    commitsSection(summary)
-                }
-                .padding(20)
-            }
-            .toolbar {
-                ToolbarItemGroup {
-                    Button {
-                        copySummary(summary, repo: repo)
-                    } label: {
-                        Label("Copy", systemImage: "doc.on.doc")
-                    }
-                    .help("Copy summary to clipboard")
-
-                    Button {
-                        exportSummary(summary, repo: repo)
-                    } label: {
-                        Label("Export", systemImage: "square.and.arrow.up")
-                    }
-                    .help("Export as Markdown")
-
-                    Button(role: .destructive) {
-                        deleteSummary(summary.id)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                    .help("Delete this summary")
-                }
-            }
+        let summaries = selectedSummaries
+        if summaries.count >= 2 {
+            selectedSummariesOverview(summaries)
+        } else if let summary = summaries.first {
+            singleSummaryDetail(summary)
         } else if !filteredUnread.isEmpty {
             unreadOverview
         } else {
@@ -281,6 +265,46 @@ struct SummaryDetailView: View {
                 systemImage: "checkmark.circle",
                 description: Text("No unread summaries. Pick one from the sidebar to revisit it.")
             )
+        }
+    }
+
+    @ViewBuilder
+    private func singleSummaryDetail(_ summary: DiffSummary) -> some View {
+        let repo = appState.repositories.first(where: { $0.id == summary.repositoryID })
+
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                detailHeader(summary: summary, repo: repo)
+                Divider()
+                summarySection(summary)
+                Divider()
+                commitsSection(summary)
+            }
+            .padding(20)
+        }
+        .toolbar {
+            ToolbarItemGroup {
+                Button {
+                    copySummary(summary, repo: repo)
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+                .help("Copy summary to clipboard")
+
+                Button {
+                    exportSummary(summary, repo: repo)
+                } label: {
+                    Label("Export…", systemImage: "square.and.arrow.up")
+                }
+                .help("Export as Markdown")
+
+                Button(role: .destructive) {
+                    deleteSummary(summary.id)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .help("Delete this summary")
+            }
         }
     }
 
@@ -329,7 +353,7 @@ struct SummaryDetailView: View {
     private func unreadCard(_ summary: DiffSummary) -> some View {
         let repo = appState.repositories.first(where: { $0.id == summary.repositoryID })
         return Button {
-            sidebarSelection = .summary(summary.id)
+            sidebarSelection = [.summary(summary.id)]
         } label: {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
@@ -363,6 +387,43 @@ struct SummaryDetailView: View {
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(.separator, lineWidth: 1))
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            summaryContextMenu(forIDs: [summary.id])
+        }
+    }
+
+    private func selectedSummariesOverview(_ summaries: [DiffSummary]) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Selected Summaries")
+                        .font(.largeTitle.weight(.semibold))
+                    Spacer()
+                    Text("\(summaries.count) selected")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    Button("Mark All as Read") {
+                        for summary in summaries {
+                            historyStore.markRead(summary.id)
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    Button(role: .destructive) {
+                        bulkDelete(summaries.map(\.id))
+                    } label: {
+                        Text("Delete All")
+                    }
+                    .buttonStyle(.bordered)
+                }
+
+                Divider()
+
+                ForEach(summaries) { summary in
+                    unreadCard(summary)
+                }
+            }
+            .padding(20)
+        }
     }
 
     private func detailHeader(summary: DiffSummary, repo: Repository?) -> some View {
@@ -478,6 +539,68 @@ struct SummaryDetailView: View {
         }
     }
 
+    // MARK: - Context Menu
+
+    @ViewBuilder
+    private func summaryContextMenu(forIDs ids: [UUID]) -> some View {
+        let summaries = ids.compactMap { id in
+            historyStore.summaries.first(where: { $0.id == id })
+        }
+        let anyUnread = summaries.contains(where: { !$0.isRead })
+
+        if !summaries.isEmpty {
+            Button {
+                if anyUnread {
+                    for summary in summaries where !summary.isRead {
+                        historyStore.markRead(summary.id)
+                    }
+                } else {
+                    for summary in summaries where summary.isRead {
+                        historyStore.markUnread(summary.id)
+                    }
+                }
+            } label: {
+                Label(
+                    anyUnread ? "Mark as Read" : "Mark as Unread",
+                    systemImage: anyUnread ? "envelope.open" : "envelope.badge"
+                )
+            }
+
+            if summaries.count == 1, let summary = summaries.first {
+                let repo = appState.repositories.first(where: { $0.id == summary.repositoryID })
+
+                Divider()
+
+                Button {
+                    copySummary(summary, repo: repo)
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+
+                Button {
+                    exportSummary(summary, repo: repo)
+                } label: {
+                    Label("Export…", systemImage: "square.and.arrow.up")
+                }
+            }
+
+            Divider()
+
+            Button(role: .destructive) {
+                if ids.count == 1, let id = ids.first {
+                    deleteSummary(id)
+                } else {
+                    bulkDelete(ids)
+                }
+            } label: {
+                Label(
+                    ids.count > 1 ? "Delete \(ids.count) Summaries" : "Delete",
+                    systemImage: "trash"
+                )
+            }
+        }
+    }
+
     // MARK: - Grouping
 
     private struct RepoGroup: Equatable {
@@ -517,24 +640,28 @@ struct SummaryDetailView: View {
         if let id = windowState.selectedSummaryID {
             // Verify the summary still exists
             if historyStore.summaries.contains(where: { $0.id == id }) {
-                sidebarSelection = .summary(id)
+                sidebarSelection = [.summary(id)]
             } else if let repoID = windowState.selectedRepositoryID,
                       let first = historyStore.summaries(for: repoID).first {
-                sidebarSelection = .summary(first.id)
+                sidebarSelection = [.summary(first.id)]
             } else {
-                sidebarSelection = .overview
+                sidebarSelection = [.overview]
             }
         } else if let repoID = windowState.selectedRepositoryID,
                   let first = historyStore.summaries(for: repoID).first {
-            sidebarSelection = .summary(first.id)
+            sidebarSelection = [.summary(first.id)]
         }
     }
 
     private func deleteSummary(_ id: UUID) {
-        if selectedSummaryID == id {
-            sidebarSelection = .overview
-        }
+        sidebarSelection.remove(.summary(id))
+        if sidebarSelection.isEmpty { sidebarSelection = [.overview] }
         historyStore.delete(id)
+    }
+
+    private func bulkDelete(_ ids: [UUID]) {
+        sidebarSelection = [.overview]
+        for id in ids { historyStore.delete(id) }
     }
 
     private func copySummary(_ summary: DiffSummary, repo: Repository?) {
