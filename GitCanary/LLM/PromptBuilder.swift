@@ -26,12 +26,15 @@ enum PromptBuilder {
     ) -> String {
         var parts: [String] = []
 
+        let meaningfulCommits = commits.filter { !$0.fileStats.isEmpty }
+        let commitsToRender = meaningfulCommits.isEmpty ? commits : meaningfulCommits
+
         parts.append("## Repository: \(repositoryName)")
         parts.append("")
-        parts.append("### Commits (\(commits.count))")
+        parts.append("### Commits (\(commitsToRender.count))")
         parts.append("")
 
-        for commit in commits {
+        for commit in commitsToRender {
             let stats = "+\(commit.insertions) -\(commit.deletions) in \(commit.filesChanged) files"
             parts.append("- `\(commit.shortHash)` \(commit.author): \(commit.subject) (\(stats))")
         }
